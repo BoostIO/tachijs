@@ -42,3 +42,31 @@ export function httpMethod(method: string, path: string) {
     setHttpMethodListMeta(target.constructor, newHttpMethodList)
   }
 }
+
+export function httpGet(path: string) {
+  return httpMethod('get', path)
+}
+
+export function httpPost(path: string) {
+  return httpMethod('post', path)
+}
+
+export function httpPut(path: string) {
+  return httpMethod('put', path)
+}
+
+export function httpPatch(path: string) {
+  return httpMethod('patch', path)
+}
+
+export function httpDelete(path: string) {
+  return httpMethod('delete', path)
+}
+
+export function httpOptions(path: string) {
+  return httpMethod('options', path)
+}
+
+export function httpHead(path: string) {
+  return httpMethod('head', path)
+}
