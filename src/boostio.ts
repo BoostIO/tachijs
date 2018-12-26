@@ -1,6 +1,7 @@
 import express from 'express'
 import { getControllerMeta } from './controller'
 import { getHttpMethodListMeta, HttpMethodMeta } from './httpMethods'
+import { getHandlerParamListMeta } from './handlerParam'
 
 export interface BoostioOptions {
   before?: (app: express.Application) => Promise<void>
@@ -81,7 +82,15 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
   ) => {
     try {
       const method = controller[methodMeta.propertyKey]
-      const result = await method()
+
+      const paramListMeta = getHandlerParamListMeta(controller.constructor)
+
+      const args = paramListMeta.reduce((acc, paramMeta) => {
+        acc[paramMeta.index] = paramMeta.selector(req, res, next)
+        return acc
+      }, [])
+
+      const result = await method(...args)
       res.send(result)
       return
     } catch (error) {
