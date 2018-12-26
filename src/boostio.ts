@@ -30,16 +30,46 @@ function registerControllerToApp(app: express.Application) {
       throw new Error('Please apply @controller decorator.')
     const methodList = getHttpMethodListMeta(ControllerConstructor)
     methodList.map(methodMeta => {
-      switch (methodMeta.method) {
-        case 'get':
-          router.get(
-            methodMeta.path,
-            makeRequestHandler(controller, methodMeta)
-          )
-          break
-      }
+      const handler = makeRequestHandler(controller, methodMeta)
+      bindHandler(router, methodMeta, handler)
     })
+
     app.use(controllerMeta.path, router)
+  }
+}
+
+function bindHandler(
+  router: express.Router,
+  methodMeta: HttpMethodMeta,
+  handler: express.RequestHandler
+) {
+  switch (methodMeta.method) {
+    case 'get':
+      router.get(methodMeta.path, handler)
+      break
+    case 'post':
+      router.post(methodMeta.path, handler)
+      break
+    case 'put':
+      router.put(methodMeta.path, handler)
+      break
+    case 'patch':
+      router.patch(methodMeta.path, handler)
+      break
+    case 'delete':
+      router.delete(methodMeta.path, handler)
+      break
+    case 'options':
+      router.options(methodMeta.path, handler)
+      break
+    case 'head':
+      router.head(methodMeta.path, handler)
+      break
+    case 'all':
+      router.all(methodMeta.path, handler)
+      break
+    default:
+      throw new Error(`"${methodMeta.method}" is not a valid method.`)
   }
 }
 
