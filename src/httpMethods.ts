@@ -1,5 +1,7 @@
 import { MetaKey } from './consts'
 
+const metaKey = MetaKey.httpMethods
+
 export interface HttpMethodMeta {
   method: string
   path: string
@@ -9,7 +11,7 @@ export interface HttpMethodMeta {
 export type HttpMethodListMeta = HttpMethodMeta[]
 
 export function getHttpMethodListMeta(controller: any): HttpMethodListMeta {
-  const metaList = Reflect.getMetadata(MetaKey.httpMethods, controller)
+  const metaList = Reflect.getMetadata(metaKey, controller)
   if (metaList == null) return []
   return metaList
 }
@@ -18,7 +20,7 @@ export function setHttpMethodListMeta(
   controller: any,
   meta: HttpMethodListMeta
 ): void {
-  Reflect.defineMetadata(MetaKey.httpMethods, meta, controller)
+  Reflect.defineMetadata(metaKey, meta, controller)
 }
 
 export function httpMethod(method: string, path: string) {
