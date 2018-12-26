@@ -1,0 +1,32 @@
+{
+  "name": "boostio",
+  "version": "0.1.0",
+  "description": "Highly testable dead simple web server written in Typescript",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "format": "prettier --write \"src/**/*\""
+  },
+  "keywords": [],
+  "author": "Junyoung Choi <fluke8259@gmail.com> (https://github.com/rokt33r)",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.16.0",
+    "@types/node": "^10.12.18",
+    "@types/prettier": "^1.15.2",
+    "nodemon": "^1.18.9",
+    "prettier": "^1.15.3",
+    "reflect-metadata": "^0.1.12",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.12"
+  }
+}
