@@ -72,3 +72,7 @@ export function httpOptions(path: string) {
 export function httpHead(path: string) {
   return httpMethod('head', path)
 }
+
+export function httpAll(path: string) {
+  return httpMethod('all', path)
+}
