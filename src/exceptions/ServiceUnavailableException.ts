@@ -1,8 +1,8 @@
 import { HttpException } from './HttpException'
 import { HttpStatusEnum } from '../HttpStatusEnum'
 
-export class BadGatewayException extends HttpException {
+export class ServiceUnavailableException extends HttpException {
   constructor(public readonly message: string) {
-    super(message, HttpStatusEnum.BAD_GATEWAY)
+    super(message, HttpStatusEnum.SERVICE_UNAVAILABLE)
   }
 }
