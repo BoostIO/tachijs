@@ -21,13 +21,15 @@ Luckily, Boostio tackles those problems. If you have other ideas, please create 
 
 ## How to use
 
+### Basic example
+
 ```ts
 import boostio, { controller, httpGet, reqParam } from 'boostio'
 
 @controller('/')
 class HomeController {
   @httpGet('/:id')
-  async showId(@reqParam('id') id: string) {
+  async showId(@reqParams('id') id: string) {
     const data = await doSomethingAsync()
 
     return {
@@ -42,6 +44,50 @@ const server = boostio({
 })
 
 server.listen(8000)
+```
+
+### Custom parameter decorators
+
+If you're using `express-session`, you shyould want to access Session data from `req.session`.
+`@handlerParam` decorator make it possible. The decorator gets a selector which accepts `req`, `res` and `next`. So all you need to do is decide what to return from thoes three parameters.
+
+```ts
+import boostio, { controller, httpGet, handlerParam } from 'boostio'
+
+@controller('/')
+class HomeController {
+  @httpGet('/')
+  async showId(@handlerParam((req, res, next) => req.session) session: any) {
+    doSomethingWithSession(session)
+
+    return {
+      ...
+    }
+  }
+}
+```
+
+If you want reusable code, please try like the below.
+
+```ts
+import boostio, { controller, httpGet, handlerParam } from 'boostio'
+
+function reqSession() {
+  // You can omit other next params, `res` and `next`, if you don't need for your selector.
+  return handlerParam(req => req.session)
+}
+
+@controller('/')
+class HomeController {
+  @httpGet('/')
+  async showId(@reqSession() session: any) {
+    doSomethingWithSession(session)
+
+    return {
+      ...
+    }
+  }
+}
 ```
 
 ## License
