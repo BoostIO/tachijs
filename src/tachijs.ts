@@ -3,13 +3,13 @@ import { getControllerMeta } from './controller'
 import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
 import { getHandlerParamMetaList } from './handlerParam'
 
-export interface BoostioOptions {
+export interface TachiJSOptions {
   before?: (app: express.Application) => Promise<void>
   after?: (app: express.Application) => void
   controllers: any[]
 }
 
-export function boostio(options: BoostioOptions): express.Application {
+export function tachijs(options: TachiJSOptions): express.Application {
   const app = express()
   const { controllers, before, after } = options
 

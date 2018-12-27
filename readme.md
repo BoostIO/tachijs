@@ -1,6 +1,8 @@
-:construction: We're preparing prototype now! See https://github.com/BoostIO/boostio/pull/1
+:construction: We're preparing prototype now! See https://github.com/BoostIO/tachijs/pull/1
 
-# Boostio
+# TachiJS (太刀)
+
+> [Tachi https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
 
 Highly testable dead simple web server written in Typescript
 
@@ -17,14 +19,14 @@ But using raw `expressjs` is also quite painful. To test express apps, you have 
 
 To deal with the testing problem, `inversify-express-utils` could be a solution. But it does not support many decorators. To render with view engine like pug, we need to use `res.render` method. But the only solution is using `@response` decorator. It means you have to mock up `Response` in your test. So technically it is super hard to test routes rendering view engine.
 
-Luckily, Boostio tackles those problems. If you have other ideas, please create an issue!!
+Luckily, TachiJS tackles those problems. If you have other ideas, please create an issue!!
 
 ## How to use
 
 ### Basic example
 
 ```ts
-import boostio, { controller, httpGet, reqParam } from 'boostio'
+import tachijs, { controller, httpGet, reqParam } from 'tachijs'
 
 @controller('/')
 class HomeController {
@@ -39,7 +41,7 @@ class HomeController {
   }
 }
 
-const server = boostio({
+const server = tachijs({
   controllers: HomeController
 })
 
@@ -52,7 +54,7 @@ If you're using `express-session`, you shyould want to access Session data from 
 `@handlerParam` decorator make it possible. The decorator gets a selector which accepts `req`, `res` and `next`. So all you need to do is decide what to return from thoes three parameters.
 
 ```ts
-import boostio, { controller, httpGet, handlerParam } from 'boostio'
+import { controller, httpGet, handlerParam } from 'tachijs'
 
 @controller('/')
 class HomeController {
@@ -70,7 +72,7 @@ class HomeController {
 If you want reusable code, please try like the below.
 
 ```ts
-import boostio, { controller, httpGet, handlerParam } from 'boostio'
+import { controller, httpGet, handlerParam } from 'tachijs'
 
 function reqSession() {
   // You can omit other next params, `res` and `next`, if you don't need for your selector.

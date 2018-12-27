@@ -1,5 +1,5 @@
 {
-  "name": "boostio",
+  "name": "tachijs",
   "version": "0.1.0",
   "description": "Highly testable dead simple web server written in Typescript",
   "main": "dist/index.js",
