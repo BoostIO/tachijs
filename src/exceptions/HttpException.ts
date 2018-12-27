@@ -1,4 +1,4 @@
-import { HttpStatusEnum } from '../httpStatusEnum'
+import { HttpStatusEnum } from '../HttpStatusEnum'
 
 export class HttpException extends Error {
   constructor(
