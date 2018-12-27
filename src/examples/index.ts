@@ -1,8 +1,18 @@
 import 'reflect-metadata'
-import boostio from '../index'
+import tachijs from '../index'
 import HomePageController from './HomePageController'
+import { ServiceTypes, MyService, ChildService } from './services'
 
-const server = boostio({
-  controllers: [HomePageController]
+interface Container {
+  [ServiceTypes.MyService]: typeof MyService
+  [ServiceTypes.ChildService]: typeof ChildService
+}
+
+const server = tachijs<Container>({
+  controllers: [HomePageController],
+  container: {
+    [ServiceTypes.MyService]: MyService,
+    [ServiceTypes.ChildService]: ChildService
+  }
 })
 server.listen(8000)

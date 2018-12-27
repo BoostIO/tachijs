@@ -3,33 +3,51 @@ import { getControllerMeta } from './controller'
 import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
 import { getHandlerParamMetaList } from './handlerParam'
 import { BaseResult } from './results'
+import { getInjectMetaList } from './inject'
 
-export interface TachiJSOptions {
+export interface TachiJSOptions<C = {}> {
   before?: (app: express.Application) => Promise<void>
   after?: (app: express.Application) => void
-  controllers: any[]
+  controllers?: any[]
+  container?: C
 }
 
-export function tachijs(options: TachiJSOptions): express.Application {
+export function tachijs<C>(options: TachiJSOptions<C>): express.Application {
   const app = express()
-  const { controllers, before, after } = options
+  const { controllers = [], container = {}, before, after } = options
 
   if (before != null) before(app)
 
-  controllers.map(registerControllerToApp(app))
+  controllers
+    .map(instantiateWithContainer(container))
+    .map(registerControllerToApp(app))
 
   if (after != null) after(app)
 
   return app
 }
 
+function instantiateWithContainer(container: any) {
+  const constructorMap = new Map(Object.entries(container))
+  return function instantiate(Constructor: any) {
+    const injectMetaList = getInjectMetaList(Constructor)
+    const args = injectMetaList.map(injectMeta =>
+      instantiate(constructorMap.get(injectMeta.key))
+    ) as any[]
+
+    return new Constructor(...args)
+  }
+}
+
 function registerControllerToApp(app: express.Application) {
-  return (ControllerConstructor: any) => {
+  return (controller: any) => {
     const router = express.Router()
+    const ControllerConstructor = controller.constructor
     const controllerMeta = getControllerMeta(ControllerConstructor)
-    const controller = new ControllerConstructor()
     if (controllerMeta == null)
-      throw new Error('Please apply @controller decorator.')
+      throw new Error(
+        `Please apply @controller decorator to "${ControllerConstructor.name}".`
+      )
     const methodList = getHttpMethodMetaList(ControllerConstructor)
     methodList.map(methodMeta => {
       const handler = makeRequestHandler(controller, methodMeta)
@@ -94,7 +112,7 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
         [] as any[]
       )
 
-      const result = await method(...args)
+      const result = await method.bind(controller)(...args)
       if (result instanceof BaseResult) {
         await result.execute(req, res, next)
         return

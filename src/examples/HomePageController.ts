@@ -3,13 +3,18 @@ import {
   httpMethod,
   httpGet,
   handlerParam,
-  RedirectResult
+  RedirectResult,
+  inject
 } from '../index'
+import { MyService, ServiceTypes } from './services'
 
 @controller('/')
 export default class HomePageController {
+  constructor(@inject(ServiceTypes.MyService) private myService: MyService) {}
+
   @httpMethod('get', '/')
   async index(@handlerParam(req => req.query) query: any) {
+    this.myService.do()
     return {
       test: 'value',
       query
