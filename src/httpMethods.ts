@@ -8,17 +8,17 @@ export interface HttpMethodMeta {
   propertyKey: string
 }
 
-export type HttpMethodListMeta = HttpMethodMeta[]
+export type HttpMethodMetaList = HttpMethodMeta[]
 
-export function getHttpMethodListMeta(controller: any): HttpMethodListMeta {
+export function getHttpMethodMetaList(controller: any): HttpMethodMetaList {
   const metaList = Reflect.getMetadata(metaKey, controller)
   if (metaList == null) return []
   return metaList
 }
 
-export function setHttpMethodListMeta(
+export function setHttpMethodMetaList(
   controller: any,
-  meta: HttpMethodListMeta
+  meta: HttpMethodMetaList
 ): void {
   Reflect.defineMetadata(metaKey, meta, controller)
 }
@@ -29,7 +29,7 @@ export function httpMethod(method: string, path: string) {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    let previousHttpMethodList = getHttpMethodListMeta(target.constructor)
+    let previousHttpMethodList = getHttpMethodMetaList(target.constructor)
     if (previousHttpMethodList == null) previousHttpMethodList = []
 
     const newHttpMethodList = [
@@ -41,7 +41,7 @@ export function httpMethod(method: string, path: string) {
       ...previousHttpMethodList
     ]
 
-    setHttpMethodListMeta(target.constructor, newHttpMethodList)
+    setHttpMethodMetaList(target.constructor, newHttpMethodList)
   }
 }
 

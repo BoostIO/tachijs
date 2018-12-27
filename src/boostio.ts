@@ -1,7 +1,7 @@
 import express from 'express'
 import { getControllerMeta } from './controller'
-import { getHttpMethodListMeta, HttpMethodMeta } from './httpMethods'
-import { getHandlerParamListMeta } from './handlerParam'
+import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
+import { getHandlerParamMetaList } from './handlerParam'
 
 export interface BoostioOptions {
   before?: (app: express.Application) => Promise<void>
@@ -29,7 +29,7 @@ function registerControllerToApp(app: express.Application) {
     const controller = new ControllerConstructor()
     if (controllerMeta == null)
       throw new Error('Please apply @controller decorator.')
-    const methodList = getHttpMethodListMeta(ControllerConstructor)
+    const methodList = getHttpMethodMetaList(ControllerConstructor)
     methodList.map(methodMeta => {
       const handler = makeRequestHandler(controller, methodMeta)
       bindHandler(router, methodMeta, handler)
@@ -83,12 +83,15 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
     try {
       const method = controller[methodMeta.propertyKey]
 
-      const paramListMeta = getHandlerParamListMeta(controller.constructor)
+      const paramMetaList = getHandlerParamMetaList(controller.constructor)
 
-      const args = paramListMeta.reduce((acc, paramMeta) => {
-        acc[paramMeta.index] = paramMeta.selector(req, res, next)
-        return acc
-      }, [])
+      const args = paramMetaList.reduce(
+        (acc, paramMeta) => {
+          acc[paramMeta.index] = paramMeta.selector(req, res, next)
+          return acc
+        },
+        [] as any[]
+      )
 
       const result = await method(...args)
       res.send(result)
