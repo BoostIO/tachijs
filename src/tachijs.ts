@@ -2,6 +2,7 @@ import express from 'express'
 import { getControllerMeta } from './controller'
 import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
 import { getHandlerParamMetaList } from './handlerParam'
+import { BaseResult } from './results'
 
 export interface TachiJSOptions {
   before?: (app: express.Application) => Promise<void>
@@ -94,6 +95,10 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
       )
 
       const result = await method(...args)
+      if (result instanceof BaseResult) {
+        await result.execute(req, res, next)
+        return
+      }
       res.send(result)
       return
     } catch (error) {

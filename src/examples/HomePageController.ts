@@ -1,4 +1,4 @@
-import { controller, httpMethod, handlerParam } from '../index'
+import { controller, httpMethod, handlerParam, RedirectResult } from '../index'
 
 @controller('/')
 export default class HomePageController {
@@ -8,5 +8,10 @@ export default class HomePageController {
       test: 'value',
       query
     }
+  }
+
+  @httpMethod('get', '/redirect')
+  async redirect() {
+    return new RedirectResult('/')
   }
 }
