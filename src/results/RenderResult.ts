@@ -1,17 +1,19 @@
 import express from 'express'
 import { BaseResult } from './BaseResult'
 
+export type RenderResultCallback = (
+  error: Error | null,
+  html: string | null,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => void
+
 export class RenderResult extends BaseResult {
   constructor(
     public readonly view: string,
     public readonly locals?: any,
-    public readonly callback?: (
-      error: Error | null,
-      html: string | null,
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ) => void,
+    public readonly callback?: RenderResultCallback,
     public readonly status: number = 200
   ) {
     super()
