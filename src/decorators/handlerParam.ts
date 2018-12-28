@@ -1,4 +1,4 @@
-import { MetaKey } from './consts'
+import { MetaKey } from '../consts'
 import express from 'express'
 
 const metaKey = MetaKey.handlerParam

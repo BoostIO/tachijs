@@ -1,8 +1,8 @@
 import { HttpException } from './HttpException'
-import { HttpStatusEnum } from '../HttpStatusEnum'
+import { HttpStatus } from '../consts'
 
 export class NotFoundException extends HttpException {
   constructor(public readonly message: string) {
-    super(message, HttpStatusEnum.NOT_FOUND)
+    super(message, HttpStatus.NOT_FOUND)
   }
 }

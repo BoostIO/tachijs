@@ -1,9 +1,12 @@
 import express from 'express'
-import { getControllerMeta } from './controller'
-import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
-import { getHandlerParamMetaList } from './handlerParam'
+import {
+  HttpMethodMeta,
+  getControllerMeta,
+  getHttpMethodMetaList,
+  getHandlerParamMetaList,
+  getInjectMetaList
+} from './decorators'
 import { BaseResult } from './results'
-import { getInjectMetaList } from './inject'
 
 export interface TachiJSOptions<C = {}> {
   before?: (app: express.Application) => Promise<void>

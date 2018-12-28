@@ -1,8 +1,8 @@
 import { HttpException } from './HttpException'
-import { HttpStatusEnum } from '../HttpStatusEnum'
+import { HttpStatus } from '../consts'
 
 export class MethodNotAllowedException extends HttpException {
   constructor(public readonly message: string) {
-    super(message, HttpStatusEnum.METHOD_NOT_ALLOWED)
+    super(message, HttpStatus.METHOD_NOT_ALLOWED)
   }
 }

@@ -1,8 +1,8 @@
 import { HttpException } from './HttpException'
-import { HttpStatusEnum } from '../HttpStatusEnum'
+import { HttpStatus } from '../consts'
 
 export class GatewayTimeoutException extends HttpException {
   constructor(public readonly message: string) {
-    super(message, HttpStatusEnum.GATEWAY_TIMEOUT)
+    super(message, HttpStatus.GATEWAY_TIMEOUT)
   }
 }

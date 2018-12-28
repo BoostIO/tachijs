@@ -1,6 +1,6 @@
-import { MetaKey } from './consts'
+import { MetaKey } from '../consts'
 
-const metaKey = MetaKey.httpMethods
+const metaKey = MetaKey.httpMethod
 
 export interface HttpMethodMeta {
   method: string
