@@ -1,4 +1,6 @@
 export const MetaKey = {
-  controller: 'boostio:controller',
-  httpMethods: 'boostio:httpMethods'
+  controller: 'tachijs:controller',
+  httpMethods: 'tachijs:httpMethods',
+  handlerParam: 'tachijs:handlerParam',
+  inject: 'tachijs:inject'
 }

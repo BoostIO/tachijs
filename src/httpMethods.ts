@@ -1,24 +1,26 @@
 import { MetaKey } from './consts'
 
+const metaKey = MetaKey.httpMethods
+
 export interface HttpMethodMeta {
   method: string
   path: string
   propertyKey: string
 }
 
-export type HttpMethodListMeta = HttpMethodMeta[]
+export type HttpMethodMetaList = HttpMethodMeta[]
 
-export function getHttpMethodListMeta(controller: any): HttpMethodListMeta {
-  const metaList = Reflect.getMetadata(MetaKey.httpMethods, controller)
+export function getHttpMethodMetaList(controller: any): HttpMethodMetaList {
+  const metaList = Reflect.getMetadata(metaKey, controller)
   if (metaList == null) return []
   return metaList
 }
 
-export function setHttpMethodListMeta(
+export function setHttpMethodMetaList(
   controller: any,
-  meta: HttpMethodListMeta
+  meta: HttpMethodMetaList
 ): void {
-  Reflect.defineMetadata(MetaKey.httpMethods, meta, controller)
+  Reflect.defineMetadata(metaKey, meta, controller)
 }
 
 export function httpMethod(method: string, path: string) {
@@ -27,7 +29,7 @@ export function httpMethod(method: string, path: string) {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    let previousHttpMethodList = getHttpMethodListMeta(target.constructor)
+    let previousHttpMethodList = getHttpMethodMetaList(target.constructor)
     if (previousHttpMethodList == null) previousHttpMethodList = []
 
     const newHttpMethodList = [
@@ -39,6 +41,38 @@ export function httpMethod(method: string, path: string) {
       ...previousHttpMethodList
     ]
 
-    setHttpMethodListMeta(target.constructor, newHttpMethodList)
+    setHttpMethodMetaList(target.constructor, newHttpMethodList)
   }
+}
+
+export function httpGet(path: string) {
+  return httpMethod('get', path)
+}
+
+export function httpPost(path: string) {
+  return httpMethod('post', path)
+}
+
+export function httpPut(path: string) {
+  return httpMethod('put', path)
+}
+
+export function httpPatch(path: string) {
+  return httpMethod('patch', path)
+}
+
+export function httpDelete(path: string) {
+  return httpMethod('delete', path)
+}
+
+export function httpOptions(path: string) {
+  return httpMethod('options', path)
+}
+
+export function httpHead(path: string) {
+  return httpMethod('head', path)
+}
+
+export function httpAll(path: string) {
+  return httpMethod('all', path)
 }
