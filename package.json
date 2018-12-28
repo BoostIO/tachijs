@@ -14,7 +14,8 @@
     "format": "prettier --write \"src/**/*\"",
     "test": "npm run test:types",
     "test:types-watch": "tsc --watch --noEmit",
-    "test:types": "tsc --noEmit"
+    "test:types": "tsc --noEmit",
+    "prepublish": "npm run test && npm run build"
   },
   "keywords": [],
   "author": "Junyoung Choi <fluke8259@gmail.com> (https://github.com/rokt33r)",
