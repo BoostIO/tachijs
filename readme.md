@@ -1,5 +1,7 @@
 # TachiJS
 
+[![Build Status](https://travis-ci.com/BoostIO/tachijs.svg?branch=master)](https://travis-ci.com/BoostIO/tachijs)
+
 > [Tachi(太刀) https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
 
 Highly testable dead simple web server written in Typescript
