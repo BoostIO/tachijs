@@ -1,12 +1,11 @@
-:construction: We're preparing prototype now! See https://github.com/BoostIO/tachijs/pull/1
+# TachiJS
 
-# TachiJS (太刀)
-
-> [Tachi https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
+> [Tachi(太刀) https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
 
 Highly testable dead simple web server written in Typescript
 
 - :checkered_flag: Highly testable. (all props in `req` and `res` are injectable so you don't have to mock at all.)
+- :syringe: Simple dependency injection.
 - :zap: `async/await` request handler like Koa without any configurations.
 - :factory: Based on expressjs. (You can benefit from using this mature library)
 - :wrench: Written in Typescript.
@@ -23,26 +22,112 @@ Luckily, TachiJS tackles those problems. If you have other ideas, please create 
 
 ## How to use
 
+### Installation
+
+```sh
+npm i tachijs reflect-metadata
+```
+
 ### Basic example
 
 ```ts
-import tachijs, { controller, httpGet, reqParam } from 'tachijs'
+import 'reflect-metadata' // You have to import this to enable decorators.
+import tachijs, {
+  controller,
+  httpGet,
+  httpPost,
+  reqParams,
+  reqBody,
+  inject,
+  BaseController
+} from 'tachijs'
 
-@controller('/')
-class HomeController {
-  @httpGet('/:id')
-  async showId(@reqParams('id') id: string) {
-    const data = await doSomethingAsync()
+enum ServiceTypes {
+  EmailService = 'EmailService',
+  NotificationService = 'NotificationService'
+}
 
-    return {
-      id,
-      data
-    }
+abstract class MailerService {
+  abstract sendEmail(): Promise<void>
+}
+
+class MockEmailService extends MailerService {
+  async sendEmail() {
+    console.log('Not sending email....')
   }
 }
 
+class EmailService extends MailerService {
+  async sendEmail() {
+    console.log('Sending email...')
+  }
+}
+
+// Any classes can be injected other class.
+class NotificationService {
+  constructor(
+    // When NotificationService instantiate, MailerService will also instantiate.
+    @inject(ServiceTypes.EmailService) private mailer: MailerService
+  ) {}
+
+  async notifySometing() {
+    this.mailer.sendEmail()
+  }
+}
+
+@controller('/')
+class HomeController extends BaseController {
+  constructor(
+    @inject(ServiceTypes.NotificationService)
+    private notifier: NotificationService
+  ) {
+    super()
+  }
+
+  @httpGet('/')
+  home() {
+    return `<form action='/notify' method='post'><button>Notify</button></form>`
+  }
+
+  @httpGet('/posts/:id')
+  async showId(@reqParams('id') id: string) {
+    return {
+      id
+    }
+  }
+
+  @httpPost('/notify')
+  async notify(@reqBody() body: any) {
+    await this.notifier.notifySometing()
+
+    return this.redirect('/')
+  }
+}
+
+// All services should be registered to container for each service type
+interface Container {
+  [ServiceTypes.EmailService]: typeof MailerService
+  [ServiceTypes.NotificationService]: typeof NotificationService
+}
+
+const envIsDev = process.env.NODE_ENV === 'development'
+
+// You can easily switch any services depending on environment
+const container: Container = envIsDev
+  ? {
+      // In development env, don't send real mail
+      [ServiceTypes.EmailService]: MockEmailService,
+      [ServiceTypes.NotificationService]: NotificationService
+    }
+  : {
+      [ServiceTypes.EmailService]: EmailService,
+      [ServiceTypes.NotificationService]: NotificationService
+    }
+
+// Register controllers and container
 const server = tachijs({
-  controllers: HomeController
+  controllers: [HomeController],
+  container
 })
 
 server.listen(8000)

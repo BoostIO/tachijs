@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import tachijs from '../index'
+import tachijs from '../../index'
 import HomePageController from './HomePageController'
 import { ServiceTypes, MyService, ChildService } from './services'
 

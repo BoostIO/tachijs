@@ -1,4 +1,4 @@
-import { inject } from '../../index'
+import { inject } from '../../../index'
 import { ServiceTypes } from '../services/types'
 import { ChildService } from './ChildService'
 
