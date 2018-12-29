@@ -8,9 +8,11 @@ import {
 } from './decorators'
 import { BaseResult } from './results'
 
+export type ConfigSetter = (app: express.Application) => void
+
 export interface TachiJSOptions<C = {}> {
-  before?: (app: express.Application) => Promise<void>
-  after?: (app: express.Application) => void
+  before?: ConfigSetter
+  after?: ConfigSetter
   controllers?: any[]
   container?: C
 }
