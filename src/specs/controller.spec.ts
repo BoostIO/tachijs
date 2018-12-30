@@ -18,6 +18,7 @@ describe('controller', () => {
     })
     const response = await request(app).get('/test')
     expect(response).toMatchObject({
+      status: 200,
       text: 'Hello'
     })
   })

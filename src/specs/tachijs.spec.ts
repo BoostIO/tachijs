@@ -21,6 +21,7 @@ describe('tachijs', () => {
     // Then
     const response = await request(app).get('/')
     expect(response).toMatchObject({
+      status: 200,
       text: 'Hello'
     })
   })
@@ -62,6 +63,7 @@ describe('tachijs', () => {
     // Then
     const response = await request(app).get('/')
     expect(response).toMatchObject({
+      status: 200,
       text: 'Hello'
     })
   })
@@ -72,7 +74,7 @@ describe('tachijs', () => {
       app.use('*', (req, res, next) => next(new Error('Error!')))
     }
     const errorHandler: ErrorRequestHandler = (error, req, res, next) =>
-      res.send(error.message)
+      res.status(500).send(error.message)
     const after: ConfigSetter = app => {
       app.use(errorHandler)
     }
@@ -86,6 +88,7 @@ describe('tachijs', () => {
     // Then
     const response = await request(app).get('/')
     expect(response).toMatchObject({
+      status: 500,
       text: 'Error!'
     })
   })
@@ -123,6 +126,7 @@ describe('tachijs', () => {
     // Then
     const response = await request(app).get('/')
     expect(response).toMatchObject({
+      status: 200,
       text: 'Hello'
     })
   })
