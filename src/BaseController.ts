@@ -18,8 +18,8 @@ export class BaseController {
     return new JSONResult(data, status)
   }
 
-  redirect(location: string) {
-    return new RedirectResult(location)
+  redirect(location: string, status?: number) {
+    return new RedirectResult(location, status)
   }
 
   render(
