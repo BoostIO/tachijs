@@ -10,7 +10,7 @@ import {
 import { RenderResultCallback, SendFileResultCallback } from './results'
 
 export class BaseController {
-  end(data: any, encoding: string, status?: number) {
+  end(data: any, encoding?: string, status?: number) {
     return new EndResult(data, encoding, status)
   }
 
