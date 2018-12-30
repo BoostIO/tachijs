@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import tachijs, { controller, httpGet } from '../index'
 import request from 'supertest'
 

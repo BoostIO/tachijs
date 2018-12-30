@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import tachijs, { ConfigSetter, controller, httpGet, inject } from '../index'
 import request from 'supertest'
 import { ErrorRequestHandler } from 'express'
