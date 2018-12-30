@@ -19,6 +19,7 @@
     "test": "npm run test:types",
     "test:api": "jest",
     "test:api-watch": "jest --watch",
+    "test:api-coverage": "jest --coverage",
     "test:types-watch": "tsc --watch --noEmit",
     "test:types": "tsc --noEmit",
     "prepublishOnly": "npm run test && npm run build"
