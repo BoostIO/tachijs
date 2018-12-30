@@ -23,7 +23,7 @@ describe('EndResult', () => {
     })
   })
 
-  it('takes encoding', async () => {
+  it('accepts encoding', async () => {
     // When
     @controller('/')
     class HomeController {
@@ -45,7 +45,7 @@ describe('EndResult', () => {
     })
   })
 
-  it('takes status', async () => {
+  it('accepts status', async () => {
     // When
     @controller('/')
     class HomeController {

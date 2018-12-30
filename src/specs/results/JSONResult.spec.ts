@@ -29,7 +29,7 @@ describe('JSONResult', () => {
     })
   })
 
-  it('takes status', async () => {
+  it('accepts status', async () => {
     // When
     @controller('/')
     class HomeController {
