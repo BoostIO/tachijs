@@ -9,7 +9,9 @@ describe('SendFileResult', () => {
     class HomeController {
       @httpGet('/')
       index() {
-        return new SendFileResult(path.join(__dirname, './files/readme.md'))
+        return new SendFileResult(
+          path.join(__dirname, '../dummy/files/readme.md')
+        )
       }
     }
 
@@ -31,7 +33,7 @@ describe('SendFileResult', () => {
       @httpGet('/')
       index() {
         return new SendFileResult('readme.md', {
-          root: path.join(__dirname, './files')
+          root: path.join(__dirname, '../dummy/files')
         })
       }
     }
@@ -54,7 +56,7 @@ describe('SendFileResult', () => {
       @httpGet('/')
       index() {
         return new SendFileResult(
-          path.join(__dirname, './files/wrong.md'),
+          path.join(__dirname, '../dummy/files/wrong.md'),
           undefined,
           (error, req, res) => {
             res.send(error!.message)
@@ -81,7 +83,7 @@ describe('SendFileResult', () => {
       @httpGet('/')
       index() {
         return new SendFileResult(
-          path.join(__dirname, './files/readme.md'),
+          path.join(__dirname, '../dummy/files/readme.md'),
           undefined,
           undefined,
           201

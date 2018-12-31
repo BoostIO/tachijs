@@ -19,7 +19,7 @@ describe('RenderResult', () => {
     }
     const before: ConfigSetter = app => {
       app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, './views'))
+      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -45,7 +45,7 @@ describe('RenderResult', () => {
     }
     const before: ConfigSetter = app => {
       app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, './views'))
+      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -73,7 +73,7 @@ describe('RenderResult', () => {
     }
     const before: ConfigSetter = app => {
       app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, './views'))
+      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -101,7 +101,7 @@ describe('RenderResult', () => {
     }
     const before: ConfigSetter = app => {
       app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, './views'))
+      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -127,7 +127,7 @@ describe('RenderResult', () => {
     }
     const before: ConfigSetter = app => {
       app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, './views'))
+      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
