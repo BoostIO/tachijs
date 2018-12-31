@@ -106,9 +106,10 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
   ) => {
     try {
       const method = controller[methodMeta.propertyKey]
-
-      const paramMetaList = getHandlerParamMetaList(controller.constructor)
-
+      const paramMetaList = getHandlerParamMetaList(
+        controller.constructor,
+        methodMeta.propertyKey
+      )
       const args = paramMetaList.reduce(
         (acc, paramMeta) => {
           acc[paramMeta.index] = paramMeta.selector(req, res, next)

@@ -16,17 +16,21 @@ export interface HandlerParamMeta<T> {
 
 export type HandlerParamMetaList = HandlerParamMeta<any>[]
 
-export function getHandlerParamMetaList(controller: any): HandlerParamMetaList {
-  const metaList = Reflect.getMetadata(metaKey, controller)
+export function getHandlerParamMetaList(
+  controller: any,
+  propertyKey: string
+): HandlerParamMetaList {
+  const metaList = Reflect.getMetadata(metaKey, controller, propertyKey)
   if (metaList == null) return []
   return metaList
 }
 
 export function setHandlerParamMetaList(
   controller: any,
-  meta: HandlerParamMetaList
+  meta: HandlerParamMetaList,
+  propertyKey: string
 ): void {
-  Reflect.defineMetadata(metaKey, meta, controller)
+  Reflect.defineMetadata(metaKey, meta, controller, propertyKey)
 }
 
 export function handlerParam<T>(selector: HandlerParamSelector<T>) {
@@ -35,7 +39,10 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
     propertyKey: string,
     index: number
   ) {
-    let previousHandlerParamList = getHandlerParamMetaList(target.constructor)
+    let previousHandlerParamList = getHandlerParamMetaList(
+      target.constructor,
+      propertyKey
+    )
 
     const meta: HandlerParamMetaList = [
       {
@@ -45,7 +52,7 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
       ...previousHandlerParamList
     ]
 
-    setHandlerParamMetaList(target.constructor, meta)
+    setHandlerParamMetaList(target.constructor, meta, propertyKey)
   }
 }
 
