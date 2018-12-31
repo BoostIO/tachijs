@@ -382,4 +382,36 @@ describe('httpAll', () => {
       text: 'Hello'
     })
   })
+
+  it(`sets multiple routes in same time`, async () => {
+    // When
+    @controller('/')
+    class HomeController {
+      @httpMethod('get', '/test')
+      index() {
+        return 'Hello'
+      }
+
+      @httpMethod('get', '/test2')
+      index2() {
+        return 'Hello2'
+      }
+    }
+
+    // Then
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+    const client = request(app)
+    const response = await client.get('/test')
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
+    const response2 = await client.get('/test2')
+    expect(response2).toMatchObject({
+      status: 200,
+      text: 'Hello2'
+    })
+  })
 })
