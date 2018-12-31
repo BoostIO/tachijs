@@ -29,8 +29,7 @@ export function httpMethod(method: string, path: string) {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    let previousHttpMethodList = getHttpMethodMetaList(target.constructor)
-    if (previousHttpMethodList == null) previousHttpMethodList = []
+    const previousHttpMethodList = getHttpMethodMetaList(target.constructor)
 
     const newHttpMethodList = [
       {
