@@ -1,4 +1,4 @@
-import tachijs, { controller, httpGet } from '../index'
+import tachijs, { controller, httpGet } from '../../index'
 import request from 'supertest'
 
 describe('controller', () => {

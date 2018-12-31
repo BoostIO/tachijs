@@ -9,7 +9,7 @@ import tachijs, {
   httpOptions,
   httpHead,
   httpAll
-} from '../index'
+} from '../../index'
 import request from 'supertest'
 
 describe('httpMethod', () => {
