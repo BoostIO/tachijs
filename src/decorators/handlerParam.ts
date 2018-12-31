@@ -76,11 +76,3 @@ export function reqCookies(paramName?: string) {
     paramName == null ? req => req.cookies : req => req.cookies[paramName]
   return handlerParam(selector)
 }
-
-export function resRender() {
-  return handlerParam((req, res) => res.render)
-}
-
-export function nextFn() {
-  return handlerParam((req, res, next) => next)
-}
