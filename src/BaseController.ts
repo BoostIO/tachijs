@@ -44,7 +44,7 @@ export class BaseController {
     return new SendResult(data, status)
   }
 
-  sendStatusResult(status: number) {
+  sendStatus(status: number) {
     return new SendStatusResult(status)
   }
 }
