@@ -1,6 +1,6 @@
 # TachiJS
 
-[![Build Status](https://travis-ci.com/BoostIO/tachijs.svg?branch=master)](https://travis-ci.com/BoostIO/tachijs)
+[![Build Status](https://travis-ci.com/BoostIO/tachijs.svg?branch=master)](https://travis-ci.com/BoostIO/tachijs)[![codecov](https://codecov.io/gh/BoostIO/tachijs/branch/master/graph/badge.svg)](https://codecov.io/gh/BoostIO/tachijs)
 
 > [Tachi(太刀) https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
 
