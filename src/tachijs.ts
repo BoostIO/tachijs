@@ -1,13 +1,18 @@
 import express from 'express'
-import { getControllerMeta } from './controller'
-import { getHttpMethodMetaList, HttpMethodMeta } from './httpMethods'
-import { getHandlerParamMetaList } from './handlerParam'
+import {
+  HttpMethodMeta,
+  getControllerMeta,
+  getHttpMethodMetaList,
+  getHandlerParamMetaList,
+  getInjectMetaList
+} from './decorators'
 import { BaseResult } from './results'
-import { getInjectMetaList } from './inject'
+
+export type ConfigSetter = (app: express.Application) => void
 
 export interface TachiJSOptions<C = {}> {
-  before?: (app: express.Application) => Promise<void>
-  after?: (app: express.Application) => void
+  before?: ConfigSetter
+  after?: ConfigSetter
   controllers?: any[]
   container?: C
 }
@@ -101,9 +106,10 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
   ) => {
     try {
       const method = controller[methodMeta.propertyKey]
-
-      const paramMetaList = getHandlerParamMetaList(controller.constructor)
-
+      const paramMetaList = getHandlerParamMetaList(
+        controller.constructor,
+        methodMeta.propertyKey
+      )
       const args = paramMetaList.reduce(
         (acc, paramMeta) => {
           acc[paramMeta.index] = paramMeta.selector(req, res, next)

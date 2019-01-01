@@ -1,6 +1,6 @@
-import { MetaKey } from './consts'
+import { MetaKey } from '../consts'
 
-const metaKey = MetaKey.httpMethods
+const metaKey = MetaKey.httpMethod
 
 export interface HttpMethodMeta {
   method: string
@@ -29,8 +29,7 @@ export function httpMethod(method: string, path: string) {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    let previousHttpMethodList = getHttpMethodMetaList(target.constructor)
-    if (previousHttpMethodList == null) previousHttpMethodList = []
+    const previousHttpMethodList = getHttpMethodMetaList(target.constructor)
 
     const newHttpMethodList = [
       {

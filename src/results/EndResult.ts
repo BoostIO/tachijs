@@ -4,7 +4,7 @@ import { BaseResult } from './BaseResult'
 export class EndResult extends BaseResult {
   constructor(
     public readonly data: any,
-    public readonly encoding: string,
+    public readonly encoding?: string,
     public readonly status: number = 200
   ) {
     super()

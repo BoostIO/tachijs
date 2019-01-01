@@ -1,4 +1,4 @@
-import { MetaKey } from './consts'
+import { MetaKey } from '../consts'
 
 const metaKey = MetaKey.inject
 

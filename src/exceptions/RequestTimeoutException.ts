@@ -1,8 +1,8 @@
 import { HttpException } from './HttpException'
-import { HttpStatusEnum } from '../HttpStatusEnum'
+import { HttpStatus } from '../consts'
 
 export class RequestTimeoutException extends HttpException {
   constructor(public readonly message: string) {
-    super(message, HttpStatusEnum.REQUEST_TIMEOUT)
+    super(message, HttpStatus.REQUEST_TIMEOUT)
   }
 }

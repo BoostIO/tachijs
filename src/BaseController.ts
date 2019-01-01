@@ -10,7 +10,7 @@ import {
 import { RenderResultCallback, SendFileResultCallback } from './results'
 
 export class BaseController {
-  end(data: any, encoding: string, status?: number) {
+  end(data: any, encoding?: string, status?: number) {
     return new EndResult(data, encoding, status)
   }
 
@@ -18,8 +18,8 @@ export class BaseController {
     return new JSONResult(data, status)
   }
 
-  redirect(location: string) {
-    return new RedirectResult(location)
+  redirect(location: string, status?: number) {
+    return new RedirectResult(location, status)
   }
 
   render(
@@ -44,7 +44,7 @@ export class BaseController {
     return new SendResult(data, status)
   }
 
-  sendStatusResult(status: number) {
+  sendStatus(status: number) {
     return new SendStatusResult(status)
   }
 }
