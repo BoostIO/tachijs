@@ -107,3 +107,7 @@ export function reqSignedCookies(paramName?: string) {
       : req => req.signedCookies[paramName]
   return handlerParam(selector)
 }
+
+export function reqSession() {
+  return handlerParam(req => req.session)
+}

@@ -49,8 +49,10 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "@types/express-session": "^1.15.11",
     "cookie-parser": "^1.4.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "express-session": "^1.15.6"
   },
   "peerDependencies": {
     "reflect-metadata": "^0.1.12"
