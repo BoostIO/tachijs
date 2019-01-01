@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 'node'
   - 'lts/*'
-scripts:
+before_install:
   - npm install codecov -g
 after_success:
   - codecov
