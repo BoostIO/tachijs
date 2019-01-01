@@ -16,7 +16,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "format": "prettier --write \"src/**/*\"",
-    "test": "npm run test:types",
+    "test": "npm run test:types && npm run test:api-coverage",
     "test:api": "jest",
     "test:api-watch": "jest --watch",
     "test:api-coverage": "jest --coverage",
