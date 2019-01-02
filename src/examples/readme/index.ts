@@ -1,6 +1,7 @@
 // tslint:disable:no-console
 import 'reflect-metadata' // You have to import this to enable decorators.
 import tachijs, {
+  ConfigSetter,
   controller,
   httpGet,
   httpPost,
@@ -9,6 +10,8 @@ import tachijs, {
   inject,
   BaseController
 } from '../../'
+import { IsString } from 'class-validator'
+import bodyParser from 'body-parser'
 
 enum ServiceTypes {
   EmailService = 'EmailService',
@@ -16,18 +19,18 @@ enum ServiceTypes {
 }
 
 abstract class MailerService {
-  abstract sendEmail(): Promise<void>
+  abstract sendEmail(content: string): Promise<void>
 }
 
 class MockEmailService extends MailerService {
-  async sendEmail() {
-    console.log('Not sending email....')
+  async sendEmail(content: string) {
+    console.log(`Not sending email.... content: ${content}`)
   }
 }
 
 class EmailService extends MailerService {
-  async sendEmail() {
-    console.log('Sending email...')
+  async sendEmail(content: string) {
+    console.log(`Sending email.... content: ${content}`)
   }
 }
 
@@ -38,9 +41,15 @@ class NotificationService {
     @inject(ServiceTypes.EmailService) private mailer: MailerService
   ) {}
 
-  async notifySometing() {
-    this.mailer.sendEmail()
+  async notifyMessage(content: string) {
+    this.mailer.sendEmail(content)
   }
+}
+
+// Prepare class validator
+class NotifyRequestBody {
+  @IsString()
+  message: string
 }
 
 @controller('/')
@@ -54,7 +63,7 @@ class HomeController extends BaseController {
 
   @httpGet('/')
   home() {
-    return `<form action='/notify' method='post'><button>Notify</button></form>`
+    return `<form action='/notify' method='post'><input type='text' name='message'><button>Notify</button></form>`
   }
 
   @httpGet('/posts/:id')
@@ -65,8 +74,9 @@ class HomeController extends BaseController {
   }
 
   @httpPost('/notify')
-  async notify(@reqBody() body: any) {
-    await this.notifier.notifySometing()
+  // Apply class validator so we can be sure body is valid
+  async notify(@reqBody(NotifyRequestBody) body: NotifyRequestBody) {
+    await this.notifier.notifyMessage(body.message)
 
     return this.redirect('/')
   }
@@ -92,8 +102,17 @@ const container: Container = envIsDev
       [ServiceTypes.NotificationService]: NotificationService
     }
 
+const before: ConfigSetter = app => {
+  app.use(
+    bodyParser.urlencoded({
+      extended: true
+    })
+  )
+}
+
 // Register controllers and container
 const server = tachijs({
+  before,
   controllers: [HomeController],
   container
 })
