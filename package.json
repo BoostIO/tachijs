@@ -16,7 +16,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "format": "prettier --write \"src/**/*\"",
-    "test": "npm run test:types && npm run test:api-coverage",
+    "lint": "tslint -p .",
+    "test": "npm run test:types && npm run lint && npm run test:api-coverage",
     "test:api": "jest",
     "test:api-watch": "jest --watch",
     "test:api-coverage": "jest --coverage",
@@ -49,6 +50,7 @@
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {
