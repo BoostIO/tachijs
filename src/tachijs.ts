@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { RequestHandler } from 'express'
 import {
   HttpMethodMeta,
   getControllerMeta,
@@ -53,14 +53,29 @@ function registerControllerToApp(app: express.Application) {
       throw new Error(
         `Please apply @controller decorator to "${ControllerConstructor.name}".`
       )
-    const methodList = getHttpMethodMetaList(ControllerConstructor)
-    methodList.map(methodMeta => {
-      const handler = makeRequestHandler(controller, methodMeta)
-      bindHandler(router, methodMeta, handler)
-    })
+
+    bindMiddlewares(router, controllerMeta.middlewares)
+    bindControllerRoutes(router, controller)
 
     app.use(controllerMeta.path, router)
   }
+}
+
+function bindMiddlewares(
+  router: express.Router,
+  middlewares: RequestHandler[]
+) {
+  middlewares.map(middleware => {
+    router.use(middleware)
+  })
+}
+
+function bindControllerRoutes(router: express.Router, controller: any) {
+  const methodList = getHttpMethodMetaList(controller.constructor)
+  methodList.map(methodMeta => {
+    const handler = makeRequestHandler(controller, methodMeta)
+    bindHandler(router, methodMeta, handler)
+  })
 }
 
 function bindHandler(

@@ -1,6 +1,6 @@
 import tachijs, { ConfigSetter, controller, httpGet } from '../../index'
 import request from 'supertest'
-import { ErrorRequestHandler } from 'express'
+import { ErrorRequestHandler, RequestHandler } from 'express'
 
 describe('controller', () => {
   it('sets path to router', async () => {
@@ -51,5 +51,34 @@ describe('controller', () => {
       status: 500,
       text: 'Error!'
     })
+  })
+
+  it('sets middlewares', async () => {
+    // Given
+    const spy = jest.fn()
+    const middleware: RequestHandler = (req, res, next) => {
+      spy()
+      next()
+    }
+
+    // When
+    @controller('/test', [middleware])
+    class HomeController {
+      @httpGet('/')
+      index() {
+        return 'Hello'
+      }
+    }
+
+    // Then
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+    const response = await request(app).get('/test')
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
+    expect(spy).toBeCalled()
   })
 })
