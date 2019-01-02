@@ -27,7 +27,8 @@
   },
   "keywords": [],
   "author": "Junyoung Choi <fluke8259@gmail.com> (https://github.com/rokt33r)",
-  "license": "ISC",
+  "homepage": "https://github.com/BoostIO/tachijs#readme",
+  "license": "MIT",
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
     "@types/cookie-parser": "^1.4.1",
