@@ -16,7 +16,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "format": "prettier --write \"src/**/*\"",
-    "test": "npm run test:types && npm run test:api-coverage",
+    "lint": "tslint -p .",
+    "test": "npm run test:types && npm run lint && npm run test:api-coverage",
     "test:api": "jest",
     "test:api-watch": "jest --watch",
     "test:api-coverage": "jest --coverage",
@@ -26,7 +27,8 @@
   },
   "keywords": [],
   "author": "Junyoung Choi <fluke8259@gmail.com> (https://github.com/rokt33r)",
-  "license": "ISC",
+  "homepage": "https://github.com/BoostIO/tachijs#readme",
+  "license": "MIT",
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
     "@types/cookie-parser": "^1.4.1",
@@ -49,9 +51,13 @@
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "class-transformer": "^0.2.0",
+    "class-transformer-validator": "^0.6.0",
+    "class-validator": "^0.9.1",
     "express": "^4.16.4"
   },
   "peerDependencies": {

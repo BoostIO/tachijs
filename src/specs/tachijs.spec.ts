@@ -51,8 +51,8 @@ describe('tachijs', () => {
 
   it('registers before middleware', async () => {
     // Given
-    const before: ConfigSetter = app => {
-      app.use('*', (req, res) => res.send('Hello'))
+    const before: ConfigSetter = expressApp => {
+      expressApp.use('*', (req, res) => res.send('Hello'))
     }
 
     // When
@@ -70,13 +70,13 @@ describe('tachijs', () => {
 
   it('registers after middleware', async () => {
     // Given
-    const before: ConfigSetter = app => {
-      app.use('*', (req, res, next) => next(new Error('Error!')))
+    const before: ConfigSetter = expressApp => {
+      expressApp.use('*', (req, res, next) => next(new Error('Error!')))
     }
     const errorHandler: ErrorRequestHandler = (error, req, res, next) =>
       res.status(500).send(error.message)
-    const after: ConfigSetter = app => {
-      app.use(errorHandler)
+    const after: ConfigSetter = expressApp => {
+      expressApp.use(errorHandler)
     }
 
     // When

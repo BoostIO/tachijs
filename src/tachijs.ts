@@ -110,12 +110,12 @@ function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
         controller.constructor,
         methodMeta.propertyKey
       )
-      const args = paramMetaList.reduce(
-        (acc, paramMeta) => {
-          acc[paramMeta.index] = paramMeta.selector(req, res, next)
-          return acc
-        },
-        [] as any[]
+
+      const args: any[] = []
+      await Promise.all(
+        paramMetaList.map(async paramMeta => {
+          args[paramMeta.index] = await paramMeta.selector(req, res, next)
+        })
       )
 
       const result = await method.bind(controller)(...args)

@@ -6,12 +6,17 @@ export interface ControllerMeta {
   path: string
 }
 
-export function getControllerMeta(controller: any): ControllerMeta | undefined {
-  return Reflect.getMetadata(metaKey, controller)
+export function getControllerMeta(
+  ControllerConstructor: any
+): ControllerMeta | undefined {
+  return Reflect.getMetadata(metaKey, ControllerConstructor)
 }
 
-export function setControllerMeta(controller: any, meta: ControllerMeta): void {
-  Reflect.defineMetadata(metaKey, meta, controller)
+export function setControllerMeta(
+  ControllerConstructor: any,
+  meta: ControllerMeta
+): void {
+  Reflect.defineMetadata(metaKey, meta, ControllerConstructor)
 }
 
 export function controller(path: string) {
