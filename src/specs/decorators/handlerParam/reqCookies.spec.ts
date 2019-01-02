@@ -3,8 +3,8 @@ import tachijs, {
   controller,
   httpGet,
   reqCookies,
-  setCookie,
-  clearCookie,
+  cookieSetter,
+  cookieClearer,
   reqSignedCookies,
   CookieSetter,
   CookieClearer
@@ -83,7 +83,7 @@ describe('setCookie', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index(@setCookie() setCookie: CookieSetter) {
+      index(@cookieSetter() setCookie: CookieSetter) {
         setCookie('name', 'test')
         return ''
       }
@@ -126,13 +126,13 @@ describe('clearCookie', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index(@setCookie() setCookie: CookieSetter) {
+      index(@cookieSetter() setCookie: CookieSetter) {
         setCookie('name', 'test')
         return ''
       }
 
       @httpGet('/clear')
-      clear(@clearCookie() clearCookie: CookieClearer) {
+      clear(@cookieClearer() clearCookie: CookieClearer) {
         clearCookie('name')
       }
 
@@ -180,7 +180,7 @@ describe('reqSignedCookies', () => {
       }
 
       @httpGet('/test')
-      test(@setCookie() setCookie: CookieSetter) {
+      test(@cookieSetter() setCookie: CookieSetter) {
         setCookie('name', 'test', { signed: true })
         return ''
       }
@@ -216,7 +216,7 @@ describe('reqSignedCookies', () => {
       }
 
       @httpGet('/test')
-      test(@setCookie() setCookie: CookieSetter) {
+      test(@cookieSetter() setCookie: CookieSetter) {
         setCookie('name', 'test', { signed: true })
         return ''
       }

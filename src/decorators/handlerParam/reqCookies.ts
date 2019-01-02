@@ -7,19 +7,19 @@ export function reqCookies(paramName?: string) {
   return handlerParam(selector)
 }
 
-export interface CookieSetter {
-  (name: string, val: string, options: express.CookieOptions): express.Response
-  (name: string, val: any, options: express.CookieOptions): express.Response
-  (name: string, val: any): express.Response
-}
+export type CookieSetter = (
+  name: string,
+  val: any,
+  options?: express.CookieOptions
+) => express.Response
 
-export function setCookie() {
+export function cookieSetter() {
   return handlerParam((req, res) => res.cookie.bind(res))
 }
 
 export type CookieClearer = (name: string, options?: any) => express.Response
 
-export function clearCookie() {
+export function cookieClearer() {
   return handlerParam((req, res) => res.clearCookie.bind(res))
 }
 
