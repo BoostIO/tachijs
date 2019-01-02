@@ -25,7 +25,7 @@ export function inject(key: string) {
     propertyKey: string,
     index: number
   ) {
-    let previousInjectMetaList = getInjectMetaList(target)
+    const previousInjectMetaList = getInjectMetaList(target)
 
     const meta: InjectMetaList = [
       {

@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import 'reflect-metadata' // You have to import this to enable decorators.
 import tachijs, {
   controller,

@@ -11,8 +11,8 @@ describe('reqSession', () => {
   it('selects req.session', async () => {
     // Given
     const secret = 'secret'
-    const before: ConfigSetter = app => {
-      app.use(
+    const before: ConfigSetter = expressApp => {
+      expressApp.use(
         expressSession({
           secret,
           resave: true,

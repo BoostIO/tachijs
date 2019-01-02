@@ -7,6 +7,11 @@ import tachijs, {
 import request from 'supertest'
 import path from 'path'
 
+const before: ConfigSetter = app => {
+  app.set('view engine', 'pug')
+  app.set('views', path.join(__dirname, '../dummy/views'))
+}
+
 describe('RenderResult', () => {
   it('is handled with res.render', async () => {
     // When
@@ -16,10 +21,6 @@ describe('RenderResult', () => {
       index() {
         return new RenderResult('test')
       }
-    }
-    const before: ConfigSetter = app => {
-      app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -42,10 +43,6 @@ describe('RenderResult', () => {
       index() {
         return new RenderResult('test', { message: 'test' })
       }
-    }
-    const before: ConfigSetter = app => {
-      app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then
@@ -71,10 +68,6 @@ describe('RenderResult', () => {
         })
       }
     }
-    const before: ConfigSetter = app => {
-      app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, '../dummy/views'))
-    }
 
     // Then
     const app = tachijs({
@@ -99,10 +92,6 @@ describe('RenderResult', () => {
         })
       }
     }
-    const before: ConfigSetter = app => {
-      app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, '../dummy/views'))
-    }
 
     // Then
     const app = tachijs({
@@ -124,10 +113,6 @@ describe('RenderResult', () => {
       index() {
         return new RenderResult('test', undefined, undefined, 201)
       }
-    }
-    const before: ConfigSetter = app => {
-      app.set('view engine', 'pug')
-      app.set('views', path.join(__dirname, '../dummy/views'))
     }
 
     // Then

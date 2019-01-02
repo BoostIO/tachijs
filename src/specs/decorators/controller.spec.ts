@@ -28,8 +28,8 @@ describe('controller', () => {
     // Given
     const errorHandler: ErrorRequestHandler = (error, req, res, next) =>
       res.status(500).send(error.message)
-    const after: ConfigSetter = app => {
-      app.use(errorHandler)
+    const after: ConfigSetter = expressApp => {
+      expressApp.use(errorHandler)
     }
 
     // When

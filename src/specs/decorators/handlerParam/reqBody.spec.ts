@@ -12,8 +12,8 @@ import { IsString } from 'class-validator'
 describe('reqBody', () => {
   it('selects req.body', async () => {
     // Given
-    const before: ConfigSetter = app => {
-      app.use(bodyParser.json())
+    const before: ConfigSetter = expressApp => {
+      expressApp.use(bodyParser.json())
     }
 
     // When
@@ -43,8 +43,8 @@ describe('reqBody', () => {
 
   it('selects, validates and transforms req.body', async () => {
     // Given
-    const before: ConfigSetter = app => {
-      app.use(bodyParser.json())
+    const before: ConfigSetter = expressApp => {
+      expressApp.use(bodyParser.json())
     }
 
     class UserDTO {
@@ -79,11 +79,11 @@ describe('reqBody', () => {
 
   it('throws when req.body is invalid', async () => {
     // Given
-    const before: ConfigSetter = app => {
-      app.use(bodyParser.json())
+    const before: ConfigSetter = expressApp => {
+      expressApp.use(bodyParser.json())
     }
-    const after: ConfigSetter = app => {
-      app.use(((error, req, res, next) => {
+    const after: ConfigSetter = expressApp => {
+      expressApp.use(((error, req, res, next) => {
         if (Array.isArray(error)) {
           return res.status(422).json({
             message: error.toString().trim(),

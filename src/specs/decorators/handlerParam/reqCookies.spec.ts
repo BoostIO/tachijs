@@ -12,13 +12,12 @@ import tachijs, {
 import request from 'supertest'
 import cookieParser from 'cookie-parser'
 
+const before: ConfigSetter = app => {
+  app.use(cookieParser('secret'))
+}
+
 describe('reqCookies', () => {
   it('selects req.cookies', async () => {
-    // Given
-    const before: ConfigSetter = app => {
-      app.use(cookieParser())
-    }
-
     // When
     @controller('/')
     class HomeController {
@@ -43,11 +42,6 @@ describe('reqCookies', () => {
   })
 
   it('selects a property from req.cookies', async () => {
-    // Given
-    const before: ConfigSetter = app => {
-      app.use(cookieParser())
-    }
-
     // When
     @controller('/')
     class HomeController {
@@ -74,11 +68,6 @@ describe('reqCookies', () => {
 
 describe('setCookie', () => {
   it('selects res.cookie', async () => {
-    // Given
-    const before: ConfigSetter = app => {
-      app.use(cookieParser())
-    }
-
     // When
     @controller('/')
     class HomeController {
@@ -117,11 +106,6 @@ describe('setCookie', () => {
 
 describe('clearCookie', () => {
   it('selects res.clearCookie', async () => {
-    // Given
-    const before: ConfigSetter = app => {
-      app.use(cookieParser())
-    }
-
     // When
     @controller('/')
     class HomeController {
@@ -165,12 +149,6 @@ describe('clearCookie', () => {
 
 describe('reqSignedCookies', () => {
   it('selects req.signedCookies', async () => {
-    // Given
-    const secret = 'secret'
-    const before: ConfigSetter = app => {
-      app.use(cookieParser(secret))
-    }
-
     // When
     @controller('/')
     class HomeController {
@@ -201,12 +179,6 @@ describe('reqSignedCookies', () => {
   })
 
   it('selects a property from req.signedCookies', async () => {
-    // Given
-    const secret = 'secret'
-    const before: ConfigSetter = app => {
-      app.use(cookieParser(secret))
-    }
-
     // When
     @controller('/')
     class HomeController {

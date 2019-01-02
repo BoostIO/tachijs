@@ -39,7 +39,7 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
     propertyKey: string,
     index: number
   ) {
-    let previousHandlerParamList = getHandlerParamMetaList(
+    const previousHandlerParamList = getHandlerParamMetaList(
       target.constructor,
       propertyKey
     )
