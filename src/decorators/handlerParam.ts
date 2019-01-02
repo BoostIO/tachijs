@@ -1,5 +1,6 @@
 import { MetaKey } from '../consts'
 import express from 'express'
+import { transformAndValidate } from 'class-transformer-validator'
 
 const metaKey = MetaKey.handlerParam
 
@@ -62,8 +63,12 @@ export function reqParams(paramName?: string) {
   return handlerParam(selector)
 }
 
-export function reqBody() {
-  return handlerParam(req => req.body)
+export function reqBody(validator?: any) {
+  const selector: HandlerParamSelector<any> =
+    validator == null
+      ? req => req.body
+      : req => transformAndValidate(validator, req.body)
+  return handlerParam(selector)
 }
 
 export function reqQuery(paramName?: string) {
