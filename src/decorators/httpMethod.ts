@@ -1,4 +1,5 @@
 import { MetaKey } from '../consts'
+import { RequestHandler } from 'express'
 
 const metaKey = MetaKey.httpMethod
 
@@ -6,6 +7,7 @@ export interface HttpMethodMeta {
   method: string
   path: string
   propertyKey: string
+  middlewares: RequestHandler[]
 }
 
 export type HttpMethodMetaList = HttpMethodMeta[]
@@ -23,7 +25,11 @@ export function setHttpMethodMetaList(
   Reflect.defineMetadata(metaKey, meta, controller)
 }
 
-export function httpMethod(method: string, path: string) {
+export function httpMethod(
+  method: string,
+  path: string,
+  middlewares: RequestHandler[] = []
+) {
   return function httpMethodDecorator(
     target: any,
     propertyKey: string,
@@ -35,7 +41,8 @@ export function httpMethod(method: string, path: string) {
       {
         method,
         path,
-        propertyKey
+        propertyKey,
+        middlewares
       },
       ...previousHttpMethodList
     ]
@@ -44,34 +51,34 @@ export function httpMethod(method: string, path: string) {
   }
 }
 
-export function httpGet(path: string) {
-  return httpMethod('get', path)
+export function httpGet(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('get', path, middlewares)
 }
 
-export function httpPost(path: string) {
-  return httpMethod('post', path)
+export function httpPost(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('post', path, middlewares)
 }
 
-export function httpPut(path: string) {
-  return httpMethod('put', path)
+export function httpPut(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('put', path, middlewares)
 }
 
-export function httpPatch(path: string) {
-  return httpMethod('patch', path)
+export function httpPatch(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('patch', path, middlewares)
 }
 
-export function httpDelete(path: string) {
-  return httpMethod('delete', path)
+export function httpDelete(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('delete', path, middlewares)
 }
 
-export function httpOptions(path: string) {
-  return httpMethod('options', path)
+export function httpOptions(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('options', path, middlewares)
 }
 
-export function httpHead(path: string) {
-  return httpMethod('head', path)
+export function httpHead(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('head', path, middlewares)
 }
 
-export function httpAll(path: string) {
-  return httpMethod('all', path)
+export function httpAll(path: string, middlewares?: RequestHandler[]) {
+  return httpMethod('all', path, middlewares)
 }

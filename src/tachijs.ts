@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { RequestHandler } from 'express'
 import {
   HttpMethodMeta,
   getControllerMeta,
@@ -53,14 +53,29 @@ function registerControllerToApp(app: express.Application) {
       throw new Error(
         `Please apply @controller decorator to "${ControllerConstructor.name}".`
       )
-    const methodList = getHttpMethodMetaList(ControllerConstructor)
-    methodList.map(methodMeta => {
-      const handler = makeRequestHandler(controller, methodMeta)
-      bindHandler(router, methodMeta, handler)
-    })
+
+    bindMiddlewares(router, controllerMeta.middlewares)
+    bindControllerRoutes(router, controller)
 
     app.use(controllerMeta.path, router)
   }
+}
+
+function bindMiddlewares(
+  router: express.Router,
+  middlewares: RequestHandler[]
+) {
+  middlewares.map(middleware => {
+    router.use(middleware)
+  })
+}
+
+function bindControllerRoutes(router: express.Router, controller: any) {
+  const methodList = getHttpMethodMetaList(controller.constructor)
+  methodList.map(methodMeta => {
+    const handler = makeRequestHandler(controller, methodMeta)
+    bindHandler(router, methodMeta, handler)
+  })
 }
 
 function bindHandler(
@@ -70,28 +85,28 @@ function bindHandler(
 ) {
   switch (methodMeta.method) {
     case 'get':
-      router.get(methodMeta.path, handler)
+      router.get(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'post':
-      router.post(methodMeta.path, handler)
+      router.post(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'put':
-      router.put(methodMeta.path, handler)
+      router.put(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'patch':
-      router.patch(methodMeta.path, handler)
+      router.patch(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'delete':
-      router.delete(methodMeta.path, handler)
+      router.delete(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'options':
-      router.options(methodMeta.path, handler)
+      router.options(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'head':
-      router.head(methodMeta.path, handler)
+      router.head(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'all':
-      router.all(methodMeta.path, handler)
+      router.all(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     default:
       throw new Error(`"${methodMeta.method}" is not a valid method.`)

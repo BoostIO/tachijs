@@ -11,6 +11,7 @@ import tachijs, {
   httpAll
 } from '../../index'
 import request from 'supertest'
+import { RequestHandler } from 'express'
 
 describe('httpMethod', () => {
   it(`sets get method route`, async () => {
@@ -199,6 +200,35 @@ describe('httpMethod', () => {
         message: '"wrong" is not a valid method.'
       })
     }
+  })
+
+  it('accepts middlewares', async () => {
+    // Given
+    const spy = jest.fn()
+    const middleware: RequestHandler = (req, res, next) => {
+      spy()
+      next()
+    }
+
+    // When
+    @controller('/')
+    class HomeController {
+      @httpMethod('get', '/', [middleware])
+      index() {
+        return 'Hello'
+      }
+    }
+
+    // Then
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+    const response = await request(app).get('/')
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
+    expect(spy).toBeCalled()
   })
 })
 
