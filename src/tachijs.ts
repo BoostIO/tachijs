@@ -85,28 +85,28 @@ function bindHandler(
 ) {
   switch (methodMeta.method) {
     case 'get':
-      router.get(methodMeta.path, handler)
+      router.get(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'post':
-      router.post(methodMeta.path, handler)
+      router.post(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'put':
-      router.put(methodMeta.path, handler)
+      router.put(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'patch':
-      router.patch(methodMeta.path, handler)
+      router.patch(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'delete':
-      router.delete(methodMeta.path, handler)
+      router.delete(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'options':
-      router.options(methodMeta.path, handler)
+      router.options(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'head':
-      router.head(methodMeta.path, handler)
+      router.head(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     case 'all':
-      router.all(methodMeta.path, handler)
+      router.all(methodMeta.path, ...methodMeta.middlewares, handler)
       break
     default:
       throw new Error(`"${methodMeta.method}" is not a valid method.`)
