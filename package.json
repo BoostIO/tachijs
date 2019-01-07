@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "dev": "nodemon",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist types && tsc",
     "format": "prettier --write \"src/**/*\"",
     "lint": "tslint -p .",
     "test": "npm run test:types && npm run lint && npm run test:api-coverage",
