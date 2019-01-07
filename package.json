@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "format": "prettier --write \"src/**/*\"",
     "lint": "tslint -p .",
     "test": "npm run test:types && npm run lint && npm run test:api-coverage",
@@ -47,6 +47,7 @@
     "prettier": "^1.15.3",
     "pug": "^2.0.3",
     "reflect-metadata": "^0.1.12",
+    "rimraf": "^2.6.3",
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
