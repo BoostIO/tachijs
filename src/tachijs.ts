@@ -6,6 +6,7 @@ import {
   getHandlerParamMetaList,
   getInjectMetaList
 } from './decorators'
+import { BaseController } from './BaseController'
 import { BaseResult } from './results'
 
 export type ConfigSetter = (app: express.Application) => void
@@ -23,9 +24,7 @@ export function tachijs<C>(options: TachiJSOptions<C>): express.Application {
 
   if (before != null) before(app)
 
-  controllers
-    .map(instantiateWithContainer(container))
-    .map(registerControllerToApp(app))
+  controllers.map(registerControllerToApp(app, container))
 
   if (after != null) after(app)
 
@@ -44,10 +43,9 @@ function instantiateWithContainer(container: any) {
   }
 }
 
-function registerControllerToApp(app: express.Application) {
-  return (controller: any) => {
+function registerControllerToApp(app: express.Application, container: any) {
+  return (ControllerConstructor: any) => {
     const router = express.Router()
-    const ControllerConstructor = controller.constructor
     const controllerMeta = getControllerMeta(ControllerConstructor)
     if (controllerMeta == null)
       throw new Error(
@@ -55,7 +53,7 @@ function registerControllerToApp(app: express.Application) {
       )
 
     bindMiddlewares(router, controllerMeta.middlewares)
-    bindControllerRoutes(router, controller)
+    bindControllerRoutes(router, ControllerConstructor, container)
 
     app.use(controllerMeta.path, router)
   }
@@ -70,10 +68,18 @@ function bindMiddlewares(
   })
 }
 
-function bindControllerRoutes(router: express.Router, controller: any) {
-  const methodList = getHttpMethodMetaList(controller.constructor)
+function bindControllerRoutes(
+  router: express.Router,
+  ControllerConstructor: any,
+  container: any
+) {
+  const methodList = getHttpMethodMetaList(ControllerConstructor)
   methodList.map(methodMeta => {
-    const handler = makeRequestHandler(controller, methodMeta)
+    const handler = makeRequestHandler(
+      ControllerConstructor,
+      methodMeta,
+      container
+    )
     bindHandler(router, methodMeta, handler)
   })
 }
@@ -113,13 +119,26 @@ function bindHandler(
   }
 }
 
-function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
+function makeRequestHandler(
+  ControllerConstructor: any,
+  methodMeta: HttpMethodMeta,
+  container: any
+) {
   return async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) => {
     try {
+      const controller = instantiateWithContainer(container)(
+        ControllerConstructor
+      )
+      if (controller instanceof BaseController) {
+        controller.httpContext = {
+          req,
+          res
+        }
+      }
       const method = controller[methodMeta.propertyKey]
       const paramMetaList = getHandlerParamMetaList(
         controller.constructor,
