@@ -1,4 +1,4 @@
-import express, { RequestHandler } from 'express'
+import express, { RequestHandler, Router } from 'express'
 import {
   HttpMethodMeta,
   getControllerMeta,
@@ -6,9 +6,12 @@ import {
   getHandlerParamMetaList,
   getInjectMetaList
 } from './decorators'
+import { BaseController } from './BaseController'
 import { BaseResult } from './results'
 
 export type ConfigSetter = (app: express.Application) => void
+
+type Instantiator = (Constructor: any) => any
 
 export interface TachiJSOptions<C = {}> {
   before?: ConfigSetter
@@ -20,19 +23,31 @@ export interface TachiJSOptions<C = {}> {
 export function tachijs<C>(options: TachiJSOptions<C>): express.Application {
   const app = express()
   const { controllers = [], container = {}, before, after } = options
+  const instantiator: Instantiator = createInstantiator(container)
 
   if (before != null) before(app)
 
-  controllers
-    .map(instantiateWithContainer(container))
-    .map(registerControllerToApp(app))
+  controllers.map(ControllerConstructor => {
+    const router = express.Router()
+    const controllerMeta = getControllerMeta(ControllerConstructor)
+    if (controllerMeta == null)
+      throw new Error(
+        `Please apply @controller decorator to "${ControllerConstructor.name}".`
+      )
+
+    registerMiddlewares(router, controllerMeta.middlewares)
+
+    bindControllerRoutes(router, ControllerConstructor, instantiator)
+
+    app.use(controllerMeta.path, router)
+  })
 
   if (after != null) after(app)
 
   return app
 }
 
-function instantiateWithContainer(container: any) {
+function createInstantiator(container: any) {
   const constructorMap = new Map(Object.entries(container))
   return function instantiate(Constructor: any) {
     const injectMetaList = getInjectMetaList(Constructor)
@@ -44,38 +59,69 @@ function instantiateWithContainer(container: any) {
   }
 }
 
-function registerControllerToApp(app: express.Application) {
-  return (controller: any) => {
-    const router = express.Router()
-    const ControllerConstructor = controller.constructor
-    const controllerMeta = getControllerMeta(ControllerConstructor)
-    if (controllerMeta == null)
-      throw new Error(
-        `Please apply @controller decorator to "${ControllerConstructor.name}".`
-      )
-
-    bindMiddlewares(router, controllerMeta.middlewares)
-    bindControllerRoutes(router, controller)
-
-    app.use(controllerMeta.path, router)
-  }
+function registerMiddlewares(router: Router, middlewares: RequestHandler[]) {
+  middlewares.map(middleware => router.use(middleware))
 }
 
-function bindMiddlewares(
+function bindControllerRoutes(
   router: express.Router,
-  middlewares: RequestHandler[]
+  ControllerConstructor: any,
+  instantiator: Instantiator
 ) {
-  middlewares.map(middleware => {
-    router.use(middleware)
-  })
-}
-
-function bindControllerRoutes(router: express.Router, controller: any) {
-  const methodList = getHttpMethodMetaList(controller.constructor)
+  const methodList = getHttpMethodMetaList(ControllerConstructor)
   methodList.map(methodMeta => {
-    const handler = makeRequestHandler(controller, methodMeta)
+    const handler = makeRequestHandler(
+      ControllerConstructor,
+      methodMeta,
+      instantiator
+    )
     bindHandler(router, methodMeta, handler)
   })
+}
+
+function makeRequestHandler(
+  ControllerConstructor: any,
+  methodMeta: HttpMethodMeta,
+  instantiate: Instantiator
+) {
+  return async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const controller = instantiate(ControllerConstructor)
+      if (controller instanceof BaseController) {
+        controller.httpContext = {
+          req,
+          res
+        }
+      }
+      const method = controller[methodMeta.propertyKey]
+      const paramMetaList = getHandlerParamMetaList(
+        controller.constructor,
+        methodMeta.propertyKey
+      )
+
+      const args: any[] = []
+      await Promise.all(
+        paramMetaList.map(async paramMeta => {
+          args[paramMeta.index] = await paramMeta.selector(req, res, next)
+        })
+      )
+
+      const result = await method.bind(controller)(...args)
+      if (result instanceof BaseResult) {
+        await result.execute(req, res, next)
+        return
+      }
+      res.send(result)
+      return
+    } catch (error) {
+      next(error)
+      return
+    }
+  }
 }
 
 function bindHandler(
@@ -110,39 +156,5 @@ function bindHandler(
       break
     default:
       throw new Error(`"${methodMeta.method}" is not a valid method.`)
-  }
-}
-
-function makeRequestHandler(controller: any, methodMeta: HttpMethodMeta) {
-  return async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    try {
-      const method = controller[methodMeta.propertyKey]
-      const paramMetaList = getHandlerParamMetaList(
-        controller.constructor,
-        methodMeta.propertyKey
-      )
-
-      const args: any[] = []
-      await Promise.all(
-        paramMetaList.map(async paramMeta => {
-          args[paramMeta.index] = await paramMeta.selector(req, res, next)
-        })
-      )
-
-      const result = await method.bind(controller)(...args)
-      if (result instanceof BaseResult) {
-        await result.execute(req, res, next)
-        return
-      }
-      res.send(result)
-      return
-    } catch (error) {
-      next(error)
-      return
-    }
   }
 }

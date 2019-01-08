@@ -1,4 +1,10 @@
-import tachijs, { ConfigSetter, controller, httpGet, inject } from '../index'
+import tachijs, {
+  ConfigSetter,
+  controller,
+  httpGet,
+  inject,
+  BaseController
+} from '../index'
 import request from 'supertest'
 import { ErrorRequestHandler } from 'express'
 
@@ -128,6 +134,29 @@ describe('tachijs', () => {
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
+    })
+  })
+
+  it('exposes httpContext if controller is extended from BaseController', async () => {
+    // Given
+    @controller('/')
+    class HomeController extends BaseController {
+      @httpGet('/')
+      index() {
+        return this.httpContext!.req.query.message
+      }
+    }
+
+    // When
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // Then
+    const response = await request(app).get('/?message=test')
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'test'
     })
   })
 })

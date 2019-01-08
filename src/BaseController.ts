@@ -1,3 +1,4 @@
+import express from 'express'
 import {
   EndResult,
   JSONResult,
@@ -9,7 +10,14 @@ import {
 } from './results'
 import { RenderResultCallback, SendFileResultCallback } from './results'
 
+interface HttpContext {
+  req: express.Request
+  res: express.Response
+}
+
 export class BaseController {
+  httpContext?: HttpContext
+
   end(data: any, encoding?: string, status?: number) {
     return new EndResult(data, encoding, status)
   }
