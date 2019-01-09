@@ -51,9 +51,15 @@ function createInstantiator(container: any) {
   const constructorMap = new Map(Object.entries(container))
   return function instantiate(Constructor: any) {
     const injectMetaList = getInjectMetaList(Constructor)
-    const args = injectMetaList.map(injectMeta =>
-      instantiate(constructorMap.get(injectMeta.key))
-    ) as any[]
+    const args = injectMetaList.map(injectMeta => {
+      if (constructorMap.get(injectMeta.key))
+        return instantiate(constructorMap.get(injectMeta.key))
+      throw new Error(
+        `The constructor for "${
+          injectMeta.key
+        }" is not registered in the current container.`
+      )
+    }) as any[]
 
     return new Constructor(...args)
   }

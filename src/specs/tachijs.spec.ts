@@ -137,6 +137,55 @@ describe('tachijs', () => {
     })
   })
 
+  it('throws if correspond constructor does not exist in container', async () => {
+    // Given
+    enum ServiceTypes {
+      MyService = 'MyService'
+    }
+    class MyService {
+      sayHello() {
+        return 'Hello'
+      }
+    }
+
+    const container = {}
+
+    @controller('/')
+    class HomeController {
+      constructor(
+        @inject(ServiceTypes.MyService) private myService: MyService
+      ) {}
+      @httpGet('/')
+      index() {
+        return this.myService.sayHello()
+      }
+    }
+    const after: ConfigSetter = expressApp => {
+      const handler: ErrorRequestHandler = (error, req, res, next) => {
+        res.status(500).json({
+          message: error.message
+        })
+      }
+      expressApp.use(handler)
+    }
+    const app = tachijs({
+      after,
+      controllers: [HomeController],
+      container
+    })
+    expect.assertions(1)
+
+    // When
+    const response = await request(app).get('/?message=test')
+    expect(response).toMatchObject({
+      status: 500,
+      text: JSON.stringify({
+        message:
+          'The constructor for "MyService" is not registered in the current container.'
+      })
+    })
+  })
+
   it('exposes httpContext if controller is extended from BaseController', async () => {
     // Given
     @controller('/')
