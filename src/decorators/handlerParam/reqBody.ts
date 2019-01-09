@@ -1,10 +1,14 @@
-import { HandlerParamSelector, handlerParam } from './handlerParam'
+import { handlerParam } from './handlerParam'
 import { transformAndValidate } from 'class-transformer-validator'
 
 export function reqBody(validator?: any) {
-  const selector: HandlerParamSelector<any> =
-    validator == null
-      ? req => req.body
-      : req => transformAndValidate(validator, req.body)
-  return handlerParam(selector)
+  const validatorIsGiven = validator != null
+  if (validatorIsGiven) {
+    return handlerParam(req => transformAndValidate(validator, req.body))
+  }
+  return handlerParam((req, res, next, meta) => {
+    return meta.paramType !== Object
+      ? transformAndValidate(meta.paramType, req.body)
+      : req.body
+  })
 }

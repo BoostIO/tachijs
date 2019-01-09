@@ -41,7 +41,44 @@ describe('reqBody', () => {
     })
   })
 
-  it('selects, validates and transforms req.body', async () => {
+  it('selects, validates and transforms req.body(validator from param types metadata)', async () => {
+    // Given
+    const before: ConfigSetter = expressApp => {
+      expressApp.use(bodyParser.json())
+    }
+
+    class UserDTO {
+      @IsString()
+      name: string
+    }
+
+    // When
+    @controller('/')
+    class HomeController {
+      @httpPost('/')
+      index(@reqBody() user: UserDTO) {
+        expect(user).toBeInstanceOf(UserDTO)
+        return `Hello, ${user.name}`
+      }
+    }
+
+    // Then
+    const app = tachijs({
+      before,
+      controllers: [HomeController]
+    })
+    const response = await request(app)
+      .post('/')
+      .send({
+        name: 'test'
+      })
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello, test'
+    })
+  })
+
+  it('selects, validates and transforms req.body(validator from decorator argument)', async () => {
     // Given
     const before: ConfigSetter = expressApp => {
       expressApp.use(bodyParser.json())
@@ -57,6 +94,7 @@ describe('reqBody', () => {
     class HomeController {
       @httpPost('/')
       index(@reqBody(UserDTO) user: UserDTO) {
+        expect(user).toBeInstanceOf(UserDTO)
         return `Hello, ${user.name}`
       }
     }
@@ -103,7 +141,7 @@ describe('reqBody', () => {
     @controller('/')
     class HomeController {
       @httpPost('/')
-      index(@reqBody(UserDTO) user: UserDTO) {
+      index(@reqBody() user: UserDTO) {
         return `Hello, ${user.name}`
       }
     }

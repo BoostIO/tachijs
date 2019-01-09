@@ -6,12 +6,14 @@ const metaKey = MetaKey.handlerParam
 export type HandlerParamSelector<T> = (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
+  meta: HandlerParamMeta<T>
 ) => T
 
 export interface HandlerParamMeta<T> {
   index: number
   selector: HandlerParamSelector<T>
+  paramType: any
 }
 
 export type HandlerParamMetaList = HandlerParamMeta<any>[]
@@ -47,7 +49,12 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
     const meta: HandlerParamMetaList = [
       {
         index,
-        selector
+        selector,
+        paramType: Reflect.getMetadata(
+          'design:paramtypes',
+          target,
+          propertyKey
+        )[index]
       },
       ...previousHandlerParamList
     ]
