@@ -112,7 +112,12 @@ function makeRequestHandler(
       const args: any[] = []
       await Promise.all(
         paramMetaList.map(async paramMeta => {
-          args[paramMeta.index] = await paramMeta.selector(req, res, next)
+          args[paramMeta.index] = await paramMeta.selector(
+            req,
+            res,
+            next,
+            paramMeta
+          )
         })
       )
 
