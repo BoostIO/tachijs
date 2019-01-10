@@ -14,6 +14,7 @@ export type ConfigSetter = (app: express.Application) => void
 type Instantiator = (Constructor: any) => any
 
 export interface TachiJSOptions<C = {}> {
+  app?: express.Application
   before?: ConfigSetter
   after?: ConfigSetter
   controllers?: any[]
@@ -21,8 +22,13 @@ export interface TachiJSOptions<C = {}> {
 }
 
 export function tachijs<C>(options: TachiJSOptions<C>): express.Application {
-  const app = express()
-  const { controllers = [], container = {}, before, after } = options
+  const {
+    app = express(),
+    controllers = [],
+    container = {},
+    before,
+    after
+  } = options
   const instantiator: Instantiator = createInstantiator(container)
 
   if (before != null) before(app)
