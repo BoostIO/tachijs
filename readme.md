@@ -8,13 +8,13 @@
 
 Highly testable dead simple web server written in Typescript
 
-- :checkered_flag: Highly testable. (all props in `req` and `res` are injectable so you don't have to mock at all.)
-- :wrench: Highly customizable.
-- :syringe: Simple dependency injection.
-- :zap: `async/await` request handler like Koa without any configurations.
-- :factory: Based on expressjs. (You can benefit from using this mature library)
-- :white_check_mark: Built-in request body validator.
-- :triangular_ruler: Written in Typescript.
+- :checkered_flag: **Highly testable.** (all props in `req` and `res` are injectable so you don't have to mock at all.)
+- :wrench: **Highly customizable.**
+- :syringe: **Simple dependency injection.**
+- :zap: **`async/await` request handler.** (like Koa without any configurations.)
+- :factory: **Based on expressjs.** (You can benefit from using this mature library)
+- :white_check_mark: **Built-in request body validator.**
+- :triangular_ruler: **Written in Typescript.**
 
 ## Why?
 
