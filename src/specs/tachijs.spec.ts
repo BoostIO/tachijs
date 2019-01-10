@@ -6,7 +6,7 @@ import tachijs, {
   BaseController
 } from '../index'
 import request from 'supertest'
-import { ErrorRequestHandler } from 'express'
+import express, { ErrorRequestHandler } from 'express'
 
 describe('tachijs', () => {
   it('registers controllers and serves', async () => {
@@ -53,6 +53,24 @@ describe('tachijs', () => {
         message: 'Please apply @controller decorator to "HomeController".'
       })
     }
+  })
+
+  it('accepts express app', async () => {
+    // Given
+    const app = express()
+    app.use('*', (req, res) => res.send('Hello'))
+
+    // When
+    tachijs({
+      app
+    })
+
+    // Then
+    const response = await request(app).get('/')
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
   })
 
   it('registers before middleware', async () => {
