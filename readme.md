@@ -54,6 +54,7 @@ import tachijs, { controller, httpGet } from 'tachijs'
 
 @controller('/')
 class HomeController() {
+  // Define when this method should be used.
   @httpGet('/')
   index() {
     return {
@@ -72,6 +73,8 @@ app.listen(8000)
 ```
 
 Now you can access [http://localhost:8000/](http://localhost:8000/).
+
+For other http methods, tachijs provides `@httpPost`, `@httpPut`, `@httpPatch`, `@httpDelete`, `@httpOptions`, `@httpHead` and `@httpAll`.
 
 ### Configuring express app(Middlewares)
 
@@ -438,6 +441,68 @@ class HomeController extends BaseController {
 
 `BaseController` has methods for all build-in results, Please see our api documentation below.
 
+##### `BaseController#httpContext`
+
+You may want to share some common methods via your own base controller. But, sadly, only methods, applied `httpGet`or `httpPost` kind, can use parameter decorators to access data from `req` or `res`.
+
+To tackle this problems, we introduce `httpContext`. So tachijs will expose `req` and `res` via `httpContext` if your controller is extended from `BaseController`.
+
+```ts
+import { BaseController, controller, httpPost } from 'tachijs'
+
+class MyBaseController extends BaseController {
+  async getUserConfig() {
+    // When unit testing, httpContext is not defined.
+    if (this.httpContext == null) {
+      return new UserConfig()
+    }
+
+    // Now we can get the current user
+    const currentUser = this.httpContext.req.user
+
+    return UserConfig.findOne({
+      user: currentUser._id
+    })
+  }
+}
+
+@controller('/')
+class HomeController {
+  @httpGet('/settings')
+  settings() {
+    const userConfig = await this.getUserConfig()
+
+    return this.render('settings', {
+      userConfig
+    })
+  }
+}
+```
+
+To test `HomeController#settings`...
+
+```ts
+describe('HomeController#settings', () => {
+  it('renders userConfig', async () => {
+    // Given
+    const controller = new HomeController()
+    const mockUserConfig = await UserConfig.create({...})
+    // Replace method with mockup
+    controller.getUserConfig = () => mockUserConfig
+
+    // When
+    const result = controller.settings()
+
+    // Then
+    expect(result).toMatch({
+      locals: {
+        userConfig: mockUserConfig
+      }
+    })
+  })
+})
+```
+
 #### Customize result
 
 If you want to have customized result behavior, you can do it with `BaseResult`.
@@ -601,6 +666,219 @@ class NotificationService {
 #### Execute `res.send` or `next` inside of controllers or `@handlerParam`
 
 Please don't do that. It just make your controller untestable. If you want some special behaviors after your methods are executed, please try to implement them with `BaseResult`.
+
+## APIs
+
+### `tachijs(options: TachiJSOptions): express.Application`
+
+Create and configure an express app.
+
+#### `TachiJSOptions`
+
+```ts
+interface TachiJSOptions<C = {}> {
+  app?: express.Application
+  before?: ConfigSetter
+  after?: ConfigSetter
+  controllers?: any[]
+  container?: C
+}
+
+type ConfigSetter = (app: express.Application) => void
+```
+
+- `app` Optional. If you provide this option, tachijs will use it rather than creating new one.
+- `before` Optional. You can configure express app before registering controllers for applying middlewares.
+- `after` Optional. You can configure express app before registering controllers for error handling.
+- `controllers` Optional. Array of controller classes.
+- `container` Optional. A place for registered services.
+  If you want to use DI, you have to register services to here first.
+
+### `@controller(path: string, middlewares: RequestHandler[] = [])`
+
+It marks class as a controller.
+
+- `path` target path.
+- `middlewares` Optional. Array of middlewares.
+
+### `@httpMethod(method: string, path: string, middlewares: RequestHandler[] = [])`
+
+It marks method as a request handler.
+
+- `method` target http methods, `'get'`, `'post'`, `'put'`, `'patch'`, `'delete'`, `'options'`, `'head'` or `'all'` are available. (`'all'` means any methods.)
+- `path` target path.
+- `middlewares` Optional. Array of middlewares.
+
+tachijs also provides shortcuts for `@httpMethod`.
+
+- `@httpGet(path: string, middlewares: RequestHandler[] = [])`
+- `@httpPost(path: string, middlewares: RequestHandler[] = [])`
+- `@httpPut(path: string, middlewares: RequestHandler[] = [])`
+- `@httpPatch(path: string, middlewares: RequestHandler[] = [])`
+- `@httpDelete(path: string, middlewares: RequestHandler[] = [])`
+- `@httpOptions(path: string, middlewares: RequestHandler[] = [])`
+- `@httpHead(path: string, middlewares: RequestHandler[] = [])`
+- `@httpAll(path: string, middlewares: RequestHandler[] = [])`
+
+### `@handlerParam<T>(selector: HandlerParamSelector<T>)`
+
+- `selector` selects a property from `req`, `res`, `next` or even our `meta`
+
+```ts
+export type HandlerParamSelector<T> = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+  meta: HandlerParamMeta<T>
+) => T
+```
+
+```ts
+interface HandlerParamMeta<T> {
+  index: number
+  selector: HandlerParamSelector<T>
+  paramType: any
+}
+```
+
+- `index` Number index of the parameter.
+- `selector` Its selector.
+- `paramType` metadata from `design:paramtypes`.
+
+#### `@reqBody(validator?: any)`
+
+Inject `req.body`.
+
+- `validator` Optional. A class with decorators of `class-validator`. tachijs will validate `req.body` with it and transform `req.body` into the validator class. If `validator` is not given but the parameter has a class validator as its param type, tachijs will use it via `reflect-metadata`.
+
+```ts
+import { controller, httpPost, reqBody } from 'tachijs'
+
+@controller('/post')
+class PostController {
+  @httpPost('/')
+  // Identically same to `create(@reqBody(PostDTO) post: PostDTO)`
+  create(@reqBody() post: PostDTO) {
+    ...
+  }
+}
+```
+
+#### `@reqParams(paramName?: string)`
+
+Inject `req.params` or its property.
+
+- `paramName` If it is given, `req.params[paramName]` will be injected.
+
+#### `@reqQuery(paramName?: string)`
+
+Inject `req.query` or its property.
+
+- `paramName` If it is given, `req.query[paramName]` will be injected.
+
+#### `@reqHeaders(paramName?: string)`
+
+Inject `req.headers` or its property.
+
+- `paramName` If it is given, `req.headers[paramName]` will be injected.
+
+#### `@reqCookies(paramName?: string)`
+
+Inject `req.cookies` or its property.
+
+- `paramName` If it is given, `req.cookies[paramName]` will be injected.
+
+#### `@reqSignedCookies(paramName?: string)`
+
+Inject `req.signedCookies` or its property.
+
+- `paramName` If it is given, `req.signedCookies[paramName]` will be injected.
+
+#### `@cookieSetter()`
+
+Inject `res.cookie` method to set cookie.
+
+#### `@cookieClearer()`
+
+Inject `res.clearCookie` method to clear cookie.
+
+#### `@reqSession(paramName?: string)`
+
+Inject `req.session`.
+
+### `BaseController`
+
+A base for controller which have lots of helper methods for returning built-in results. Also, it allows another way to access properties of `req` and `res` without decorators.
+
+- `#httpContext` tachijs will set `req` and `res` to this property. So, when unit testing, it is not defined.
+- `#end(data: any, encoding?: string, status?: number): EndResult`
+- `#json(data: any, status?: number): JSONResult`
+- `#redirect(location: string, status?: number): RedirectResult`
+- `#render(view: string, locals?: any, callback?: RenderResultCallback, status?: number): RenderResult`
+- `#sendFile(filePath: string, options?: any, callback?: SendFileResultCallback, status?: number): SendFileResult`
+- `#send(data: any, status?: number): SendResult`
+- `#sendStatus(status: number): SendStatusResult`
+
+### Results
+
+#### `BaseResult`
+
+All of result classes must be extended from `BaseResult` because tachijs can recognize results by `instanceof BaseResult`.
+
+It has only one abstract method which must be defined by descendant classes.
+
+- `execute(req: express.Request, res: express.Response, next: express.NextFunction): Promise<any>` tachijs will use this method to finalize response.
+
+#### `new EndResult(data: any, encoding?: string, status: number = 200)`
+
+tachijs will finalize response with `res.status(status).end(data, encoding)`.
+
+#### `new JSONResult(data: any, status: number = 200)`
+
+tachijs will finalize response with `res.status(status).json(data)`.
+
+#### `new RedirectResult(location: string, status?: number)`
+
+tachijs will finalize response with `res.redirect(location)` (or `res.redirect(status, location)` if the status is given).
+
+#### `new RenderResult(view: string, locals?: any, callback?: RenderResultCallback, status: number = 200)`
+
+tachijs will finalize response with `res.status(status).render(view, locals, (error, html) => callback(error, html, req, res, next))`
+
+```ts
+type RenderResultCallback = (
+  error: Error | null,
+  html: string | null,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => void
+```
+
+#### `new SendFileResult(filePath: string, options: any, callback?: SendFileResultCallback, status: number = 200)`
+
+tachijs will finalize response with `res.status(status).sendFile(filePath, options, (error) => callback(error, req, res, next))`
+
+```ts
+type SendFileResultCallback = (
+  error: Error | null,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => void
+```
+
+#### `new SendResult(data: any, status: number = 200)`
+
+tachijs will finalize response with `res.status(status).send(data)`.
+
+#### `new SendStatusResult(status: number)`
+
+tachijs will finalize response with `res.sendStatus(status)`.
+
+### `@inject(key: string)`
+
+Inject a registered service in container by the given `key`.
 
 ## License
 
