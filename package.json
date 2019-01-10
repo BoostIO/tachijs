@@ -1,6 +1,6 @@
 {
   "name": "tachijs",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Highly testable dead simple web server written in Typescript",
   "main": "dist",
   "types": "types",
