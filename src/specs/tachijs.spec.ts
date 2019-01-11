@@ -18,14 +18,14 @@ describe('tachijs', () => {
         return 'Hello'
       }
     }
-
-    // When
     const app = tachijs({
       controllers: [HomeController]
     })
 
-    // Then
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -59,14 +59,14 @@ describe('tachijs', () => {
     // Given
     const app = express()
     app.use('*', (req, res) => res.send('Hello'))
-
-    // When
     tachijs({
       app
     })
 
-    // Then
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -78,14 +78,14 @@ describe('tachijs', () => {
     const before: ConfigSetter = expressApp => {
       expressApp.use('*', (req, res) => res.send('Hello'))
     }
-
-    // When
     const app = tachijs({
       before
     })
 
-    // Then
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -102,15 +102,15 @@ describe('tachijs', () => {
     const after: ConfigSetter = expressApp => {
       expressApp.use(errorHandler)
     }
-
-    // When
     const app = tachijs({
       before,
       after
     })
 
-    // Then
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 500,
       text: 'Error!'
@@ -140,15 +140,15 @@ describe('tachijs', () => {
         return this.myService.sayHello()
       }
     }
-
-    // When
     const app = tachijs({
       controllers: [HomeController],
       container
     })
 
-    // Then
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -195,6 +195,8 @@ describe('tachijs', () => {
 
     // When
     const response = await request(app).get('/?message=test')
+
+    // Then
     expect(response).toMatchObject({
       status: 500,
       text: JSON.stringify({
@@ -213,14 +215,14 @@ describe('tachijs', () => {
         return this.httpContext!.req.query.message
       }
     }
-
-    // When
     const app = tachijs({
       controllers: [HomeController]
     })
 
-    // Then
+    // When
     const response = await request(app).get('/?message=test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'test'

@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('SendResult', () => {
   it('uses res.send', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,12 +11,14 @@ describe('SendResult', () => {
         return new SendResult('Hello')
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -24,7 +26,7 @@ describe('SendResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -32,12 +34,14 @@ describe('SendResult', () => {
         return new SendResult('Hello', 201)
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 201,
       text: 'Hello'

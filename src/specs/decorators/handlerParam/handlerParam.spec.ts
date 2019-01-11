@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('handlerParam', () => {
   it('selects value from context', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/:name')
@@ -11,12 +11,14 @@ describe('handlerParam', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'

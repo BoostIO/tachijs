@@ -15,7 +15,7 @@ import { RequestHandler } from 'express'
 
 describe('httpMethod', () => {
   it(`sets get method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('get', '/test')
@@ -23,12 +23,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -36,7 +38,7 @@ describe('httpMethod', () => {
   })
 
   it(`sets post method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('post', '/test')
@@ -44,12 +46,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).post('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -57,7 +61,7 @@ describe('httpMethod', () => {
   })
 
   it(`sets put method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('put', '/test')
@@ -65,12 +69,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).put('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -78,7 +84,7 @@ describe('httpMethod', () => {
   })
 
   it(`sets patch method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('patch', '/test')
@@ -86,12 +92,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).patch('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -99,7 +107,7 @@ describe('httpMethod', () => {
   })
 
   it(`sets delete method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('delete', '/test')
@@ -107,12 +115,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).delete('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -120,7 +130,7 @@ describe('httpMethod', () => {
   })
 
   it(`sets options method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('options', '/test')
@@ -128,19 +138,21 @@ describe('httpMethod', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).options('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200
     })
   })
 
   it(`sets head method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('head', '/test')
@@ -148,19 +160,21 @@ describe('httpMethod', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).head('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200
     })
   })
 
   it(`sets all method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('all', '/test')
@@ -168,12 +182,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -181,7 +197,7 @@ describe('httpMethod', () => {
   })
 
   it('throws an error if the method is not valid', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('wrong', '/')
@@ -191,6 +207,7 @@ describe('httpMethod', () => {
     }
 
     try {
+      // When
       tachijs({
         controllers: [HomeController]
       })
@@ -218,12 +235,14 @@ describe('httpMethod', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -234,7 +253,7 @@ describe('httpMethod', () => {
 
 describe('httpGet', () => {
   it(`sets get method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/test')
@@ -242,12 +261,14 @@ describe('httpGet', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -257,7 +278,7 @@ describe('httpGet', () => {
 
 describe('httpPost', () => {
   it(`sets post method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpPost('/test')
@@ -265,12 +286,14 @@ describe('httpPost', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).post('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -280,7 +303,7 @@ describe('httpPost', () => {
 
 describe('httpPut', () => {
   it(`sets put method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpPut('/test')
@@ -288,12 +311,14 @@ describe('httpPut', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).put('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -303,7 +328,7 @@ describe('httpPut', () => {
 
 describe('httpPatch', () => {
   it(`sets patch method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpPatch('/test')
@@ -311,12 +336,14 @@ describe('httpPatch', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).patch('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -326,7 +353,7 @@ describe('httpPatch', () => {
 
 describe('httpDelete', () => {
   it(`sets delete method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpDelete('/test')
@@ -334,12 +361,14 @@ describe('httpDelete', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).delete('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -349,7 +378,7 @@ describe('httpDelete', () => {
 
 describe('httpOptions', () => {
   it(`sets options method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpOptions('/test')
@@ -357,12 +386,14 @@ describe('httpOptions', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).options('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200
     })
@@ -371,7 +402,7 @@ describe('httpOptions', () => {
 
 describe('httpHead', () => {
   it(`sets head method route`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpHead('/test')
@@ -379,12 +410,14 @@ describe('httpHead', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).head('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200
     })
@@ -393,7 +426,7 @@ describe('httpHead', () => {
 
 describe('httpAll', () => {
   it(`sets a route for all methods`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpAll('/test')
@@ -401,12 +434,14 @@ describe('httpAll', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -414,7 +449,7 @@ describe('httpAll', () => {
   })
 
   it(`sets multiple routes in same time`, async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpMethod('get', '/test')
@@ -427,18 +462,20 @@ describe('httpAll', () => {
         return 'Hello2'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const client = request(app)
     const response = await client.get('/test')
+    const response2 = await client.get('/test2')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
     })
-    const response2 = await client.get('/test2')
     expect(response2).toMatchObject({
       status: 200,
       text: 'Hello2'

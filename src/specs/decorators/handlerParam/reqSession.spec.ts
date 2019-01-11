@@ -20,8 +20,6 @@ describe('reqSession', () => {
         })
       )
     }
-
-    // When
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -41,15 +39,17 @@ describe('reqSession', () => {
         return {}
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const client = request.agent(app)
     await client.get('/test')
     const response = await client.get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'

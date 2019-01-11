@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('SendStatusResult', () => {
   it('uses res.sendStatus', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,12 +11,14 @@ describe('SendStatusResult', () => {
         return new SendStatusResult(200)
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'OK'

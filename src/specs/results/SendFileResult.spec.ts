@@ -4,7 +4,7 @@ import path from 'path'
 
 describe('SendFileResult', () => {
   it('uses res.sendFile', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -14,12 +14,14 @@ describe('SendFileResult', () => {
         )
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: '# Test document\n'
@@ -27,7 +29,7 @@ describe('SendFileResult', () => {
   })
 
   it('accepts options', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -37,12 +39,14 @@ describe('SendFileResult', () => {
         })
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: '# Test document\n'
@@ -50,7 +54,7 @@ describe('SendFileResult', () => {
   })
 
   it('accepts callback', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -64,12 +68,14 @@ describe('SendFileResult', () => {
         )
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Not Found'
@@ -77,7 +83,7 @@ describe('SendFileResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -90,12 +96,14 @@ describe('SendFileResult', () => {
         )
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 201,
       text: '# Test document\n'

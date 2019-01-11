@@ -18,7 +18,7 @@ const before: ConfigSetter = app => {
 
 describe('reqCookies', () => {
   it('selects req.cookies', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -26,15 +26,16 @@ describe('reqCookies', () => {
         return `Hello, ${cookies.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .set('cookie', 'name=test;')
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -42,7 +43,7 @@ describe('reqCookies', () => {
   })
 
   it('selects a property from req.cookies', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -50,15 +51,17 @@ describe('reqCookies', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .set('cookie', 'name=test;')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -68,7 +71,7 @@ describe('reqCookies', () => {
 
 describe('setCookie', () => {
   it('selects res.cookie', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -82,21 +85,23 @@ describe('setCookie', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const client = request.agent(app)
     const response = await client.get('/')
+    const response2 = await client.get('/cookie')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       header: {
         'set-cookie': ['name=test; Path=/']
       }
     })
-    const response2 = await client.get('/cookie')
     expect(response2).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -106,7 +111,7 @@ describe('setCookie', () => {
 
 describe('clearCookie', () => {
   it('selects res.clearCookie', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -125,21 +130,23 @@ describe('clearCookie', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const client = request.agent(app)
     await client.get('/')
     const response = await client.get('/cookie')
+    await client.get('/clear')
+    const response2 = await client.get('/cookie')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
     })
-    await client.get('/clear')
-    const response2 = await client.get('/cookie')
     expect(response2).toMatchObject({
       status: 200,
       text: 'Hello, guest'
@@ -149,7 +156,7 @@ describe('clearCookie', () => {
 
 describe('reqSignedCookies', () => {
   it('selects req.signedCookies', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -163,15 +170,17 @@ describe('reqSignedCookies', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const client = request.agent(app)
     await client.get('/test')
     const response = await client.get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -179,7 +188,7 @@ describe('reqSignedCookies', () => {
   })
 
   it('selects a property from req.signedCookies', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -193,15 +202,17 @@ describe('reqSignedCookies', () => {
         return ''
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const client = request.agent(app)
     await client.get('/test')
     const response = await client.get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'

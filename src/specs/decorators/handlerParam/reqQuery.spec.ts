@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('reqQuery', () => {
   it('selects req.query', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,12 +11,14 @@ describe('reqQuery', () => {
         return `Hello, ${query.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/?name=test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -24,7 +26,7 @@ describe('reqQuery', () => {
   })
 
   it('selects a property from req.query', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -32,12 +34,14 @@ describe('reqQuery', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/?name=test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'

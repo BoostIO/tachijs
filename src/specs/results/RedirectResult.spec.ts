@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('RedirectResult', () => {
   it('uses res.redirect', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,13 +11,14 @@ describe('RedirectResult', () => {
         return new RedirectResult('/test')
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
 
+    // Then
     expect(response).toMatchObject({
       status: 302,
       header: {
@@ -27,7 +28,7 @@ describe('RedirectResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -35,13 +36,14 @@ describe('RedirectResult', () => {
         return new RedirectResult('/test', 300)
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
 
+    // Then
     expect(response).toMatchObject({
       status: 300,
       header: {
