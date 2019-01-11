@@ -13,7 +13,7 @@ const before: ConfigSetter = app => {
 }
 
 describe('RenderResult', () => {
-  it('is handled with res.render', async () => {
+  it('uses res.render', async () => {
     // When
     @controller('/')
     class HomeController {

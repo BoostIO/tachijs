@@ -3,7 +3,7 @@ import request from 'supertest'
 import path from 'path'
 
 describe('SendFileResult', () => {
-  it('is handled with res.sendFile', async () => {
+  it('uses res.sendFile', async () => {
     // When
     @controller('/')
     class HomeController {

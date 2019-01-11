@@ -2,7 +2,7 @@ import tachijs, { controller, httpGet, JSONResult } from '../../index'
 import request from 'supertest'
 
 describe('JSONResult', () => {
-  it('is handled with res.json', async () => {
+  it('uses res.json', async () => {
     // When
     @controller('/')
     class HomeController {

@@ -2,7 +2,7 @@ import tachijs, { controller, httpGet, SendResult } from '../../index'
 import request from 'supertest'
 
 describe('SendResult', () => {
-  it('is handled with res.send', async () => {
+  it('uses res.send', async () => {
     // When
     @controller('/')
     class HomeController {

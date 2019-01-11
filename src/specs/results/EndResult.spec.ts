@@ -2,7 +2,7 @@ import tachijs, { controller, httpGet, EndResult } from '../../index'
 import request from 'supertest'
 
 describe('EndResult', () => {
-  it('is handled with res.end', async () => {
+  it('uses res.end', async () => {
     // When
     @controller('/')
     class HomeController {

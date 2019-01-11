@@ -2,7 +2,7 @@ import tachijs, { controller, httpGet, RedirectResult } from '../../index'
 import request from 'supertest'
 
 describe('RedirectResult', () => {
-  it('is handled with res.redirect', async () => {
+  it('uses res.redirect', async () => {
     // When
     @controller('/')
     class HomeController {
