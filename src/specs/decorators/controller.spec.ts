@@ -4,7 +4,7 @@ import { ErrorRequestHandler, RequestHandler } from 'express'
 
 describe('controller', () => {
   it('sets path to router', async () => {
-    // When
+    // Given
     @controller('/test')
     class HomeController {
       @httpGet('/')
@@ -12,12 +12,14 @@ describe('controller', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -32,7 +34,6 @@ describe('controller', () => {
       expressApp.use(errorHandler)
     }
 
-    // When
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -40,13 +41,15 @@ describe('controller', () => {
         throw new Error('Error!')
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController],
       after
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 500,
       text: 'Error!'
@@ -61,7 +64,6 @@ describe('controller', () => {
       next()
     }
 
-    // When
     @controller('/test', [middleware])
     class HomeController {
       @httpGet('/')
@@ -69,12 +71,14 @@ describe('controller', () => {
         return 'Hello'
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'

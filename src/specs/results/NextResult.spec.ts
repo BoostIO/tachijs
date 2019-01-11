@@ -1,14 +1,20 @@
-import tachijs, { controller, httpGet, SendResult } from '../../index'
+import tachijs, { controller, httpGet, NextResult } from '../../index'
 import request from 'supertest'
+import { ErrorRequestHandler } from 'express'
 
-describe('SendResult', () => {
-  it('uses res.send', async () => {
+describe('NextResult', () => {
+  it('uses next', async () => {
     // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
       index() {
-        return new SendResult('Hello')
+        return new NextResult()
+      }
+
+      @httpGet('/')
+      next() {
+        return 'Hello'
       }
     }
     const app = tachijs({
@@ -25,25 +31,29 @@ describe('SendResult', () => {
     })
   })
 
-  it('accepts status', async () => {
+  it('accepts error', async () => {
     // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
       index() {
-        return new SendResult('Hello', 201)
+        return new NextResult(new Error('Hello'))
       }
     }
     const app = tachijs({
       controllers: [HomeController]
     })
+    const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+      res.send(error.message)
+    }
+    app.use(errorHandler)
 
     // When
     const response = await request(app).get('/')
 
     // Then
     expect(response).toMatchObject({
-      status: 201,
+      status: 200,
       text: 'Hello'
     })
   })

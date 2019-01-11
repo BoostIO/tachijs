@@ -2,8 +2,8 @@ import tachijs, { controller, httpGet, JSONResult } from '../../index'
 import request from 'supertest'
 
 describe('JSONResult', () => {
-  it('is handled with res.json', async () => {
-    // When
+  it('uses res.json', async () => {
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -13,14 +13,16 @@ describe('JSONResult', () => {
         })
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .expect('Content-Type', /json/)
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: JSON.stringify({
@@ -30,7 +32,7 @@ describe('JSONResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -43,16 +45,21 @@ describe('JSONResult', () => {
         )
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .expect('Content-Type', /json/)
+
+    // Then
     expect(response).toMatchObject({
       status: 201,
+      header: {
+        'content-type': expect.stringContaining('application/json;')
+      },
       text: JSON.stringify({
         message: 'Hello'
       })

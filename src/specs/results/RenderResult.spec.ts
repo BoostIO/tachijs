@@ -13,8 +13,8 @@ const before: ConfigSetter = app => {
 }
 
 describe('RenderResult', () => {
-  it('is handled with res.render', async () => {
-    // When
+  it('uses res.render', async () => {
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -22,13 +22,15 @@ describe('RenderResult', () => {
         return new RenderResult('test')
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: '<h1>Hello</h1>'
@@ -36,7 +38,7 @@ describe('RenderResult', () => {
   })
 
   it('accepts data', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -44,13 +46,15 @@ describe('RenderResult', () => {
         return new RenderResult('test', { message: 'test' })
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: '<h1>Hello</h1><p>test</p>'
@@ -58,7 +62,7 @@ describe('RenderResult', () => {
   })
 
   it('accepts a callback', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -68,13 +72,15 @@ describe('RenderResult', () => {
         })
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: '<h1>Hello</h1>test'
@@ -82,7 +88,7 @@ describe('RenderResult', () => {
   })
 
   it('accepts a callback handling render errors', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -92,13 +98,15 @@ describe('RenderResult', () => {
         })
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 500,
       text: 'Cannot read property message of null'
@@ -106,7 +114,7 @@ describe('RenderResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -114,13 +122,15 @@ describe('RenderResult', () => {
         return new RenderResult('test', undefined, undefined, 201)
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 201,
       text: '<h1>Hello</h1>'

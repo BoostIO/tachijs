@@ -16,7 +16,6 @@ describe('reqBody', () => {
       expressApp.use(bodyParser.json())
     }
 
-    // When
     @controller('/')
     class HomeController {
       @httpPost('/')
@@ -24,17 +23,19 @@ describe('reqBody', () => {
         return `Hello, ${body.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .post('/')
       .send({
         name: 'test'
       })
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -46,13 +47,10 @@ describe('reqBody', () => {
     const before: ConfigSetter = expressApp => {
       expressApp.use(bodyParser.json())
     }
-
     class UserDTO {
       @IsString()
       name: string
     }
-
-    // When
     @controller('/')
     class HomeController {
       @httpPost('/')
@@ -61,17 +59,19 @@ describe('reqBody', () => {
         return `Hello, ${user.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .post('/')
       .send({
         name: 'test'
       })
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -83,13 +83,10 @@ describe('reqBody', () => {
     const before: ConfigSetter = expressApp => {
       expressApp.use(bodyParser.json())
     }
-
     class UserDTO {
       @IsString()
       name: string
     }
-
-    // When
     @controller('/')
     class HomeController {
       @httpPost('/')
@@ -98,17 +95,19 @@ describe('reqBody', () => {
         return `Hello, ${user.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .post('/')
       .send({
         name: 'test'
       })
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -131,13 +130,10 @@ describe('reqBody', () => {
         return next(error)
       }) as ErrorRequestHandler)
     }
-
     class UserDTO {
       @IsString()
       name: string
     }
-
-    // When
     @controller('/')
     class HomeController {
       @httpPost('/')
@@ -145,15 +141,16 @@ describe('reqBody', () => {
         return `Hello, ${user.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       before,
       after,
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).post('/')
 
+    // Then
     expect(response).toMatchObject({
       status: 422,
       text: JSON.stringify({

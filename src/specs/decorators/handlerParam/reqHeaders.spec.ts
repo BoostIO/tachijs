@@ -3,7 +3,7 @@ import request from 'supertest'
 
 describe('reqHeaders', () => {
   it('selects req.headers', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,14 +11,16 @@ describe('reqHeaders', () => {
         return `Hello, ${headers.name}`
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .set('Name', 'test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'
@@ -26,7 +28,7 @@ describe('reqHeaders', () => {
   })
 
   it('selects a property from req.headers', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -34,14 +36,16 @@ describe('reqHeaders', () => {
         return `Hello, ${name}`
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app)
       .get('/')
       .set('Name', 'test')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello, test'

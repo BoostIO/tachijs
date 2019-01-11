@@ -2,8 +2,8 @@ import tachijs, { controller, httpGet, EndResult } from '../../index'
 import request from 'supertest'
 
 describe('EndResult', () => {
-  it('is handled with res.end', async () => {
-    // When
+  it('uses res.end', async () => {
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -11,12 +11,14 @@ describe('EndResult', () => {
         return new EndResult('Hello')
       }
     }
-
-    // Then
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // When
     const response = await request(app).get('/')
+
+    // Then
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -24,7 +26,7 @@ describe('EndResult', () => {
   })
 
   it('accepts encoding', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -33,12 +35,15 @@ describe('EndResult', () => {
       }
     }
 
-    // Then
+    // When
     const app = tachijs({
       controllers: [HomeController]
     })
-    // NOTE: supertest cannot check encoding type
+
+    // Then
     const response = await request(app).get('/')
+
+    // NOTE: supertest cannot check encoding type
     expect(response).toMatchObject({
       status: 200,
       text: 'Hello'
@@ -46,7 +51,7 @@ describe('EndResult', () => {
   })
 
   it('accepts status', async () => {
-    // When
+    // Given
     @controller('/')
     class HomeController {
       @httpGet('/')
@@ -55,10 +60,12 @@ describe('EndResult', () => {
       }
     }
 
-    // Then
+    // When
     const app = tachijs({
       controllers: [HomeController]
     })
+
+    // Then
     const response = await request(app).get('/')
     expect(response).toMatchObject({
       status: 201,
