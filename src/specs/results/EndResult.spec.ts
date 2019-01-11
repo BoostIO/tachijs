@@ -7,7 +7,7 @@ describe('EndResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): EndResult<string> {
         return new EndResult('Hello')
       }
     }
@@ -30,7 +30,7 @@ describe('EndResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): EndResult<string> {
         return new EndResult('Hello', 'ascii')
       }
     }
@@ -55,7 +55,7 @@ describe('EndResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): EndResult<string> {
         return new EndResult('Hello', undefined, 201)
       }
     }

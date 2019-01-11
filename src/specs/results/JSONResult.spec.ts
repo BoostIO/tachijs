@@ -4,10 +4,13 @@ import request from 'supertest'
 describe('JSONResult', () => {
   it('uses res.json', async () => {
     // Given
+    interface IndexResponseData {
+      message: string
+    }
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): JSONResult<IndexResponseData> {
         return new JSONResult({
           message: 'Hello'
         })
@@ -33,10 +36,13 @@ describe('JSONResult', () => {
 
   it('accepts status', async () => {
     // Given
+    interface IndexResponseData {
+      message: string
+    }
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): JSONResult<IndexResponseData> {
         return new JSONResult(
           {
             message: 'Hello'

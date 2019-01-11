@@ -1,8 +1,8 @@
 import express from 'express'
 import { BaseResult } from './BaseResult'
 
-export class NextResult extends BaseResult {
-  constructor(public readonly error?: any) {
+export class NextResult<E> extends BaseResult {
+  constructor(public readonly error?: E) {
     super()
   }
 

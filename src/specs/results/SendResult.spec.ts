@@ -7,7 +7,7 @@ describe('SendResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): SendResult<string> {
         return new SendResult('Hello')
       }
     }
@@ -30,7 +30,7 @@ describe('SendResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): SendResult<string> {
         return new SendResult('Hello', 201)
       }
     }
