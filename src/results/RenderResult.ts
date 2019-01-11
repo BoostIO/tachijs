@@ -9,10 +9,10 @@ export type RenderResultCallback = (
   next: express.NextFunction
 ) => void
 
-export class RenderResult extends BaseResult {
+export class RenderResult<L> extends BaseResult {
   constructor(
     public readonly view: string,
-    public readonly locals?: any,
+    public readonly locals?: L,
     public readonly callback?: RenderResultCallback,
     public readonly status: number = 200
   ) {

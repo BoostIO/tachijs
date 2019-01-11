@@ -1,8 +1,8 @@
 import express from 'express'
 import { BaseResult } from './BaseResult'
 
-export class JSONResult extends BaseResult {
-  constructor(public readonly data: any, public readonly status: number = 200) {
+export class JSONResult<D> extends BaseResult {
+  constructor(public readonly data: D, public readonly status: number = 200) {
     super()
   }
 

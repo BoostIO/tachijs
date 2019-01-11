@@ -36,7 +36,7 @@ describe('NextResult', () => {
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): NextResult<Error> {
         return new NextResult(new Error('Hello'))
       }
     }

@@ -1,9 +1,9 @@
 import express from 'express'
 import { BaseResult } from './BaseResult'
 
-export class EndResult extends BaseResult {
+export class EndResult<D> extends BaseResult {
   constructor(
-    public readonly data: any,
+    public readonly data: D,
     public readonly encoding?: string,
     public readonly status: number = 200
   ) {

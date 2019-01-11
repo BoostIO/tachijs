@@ -39,10 +39,13 @@ describe('RenderResult', () => {
 
   it('accepts data', async () => {
     // Given
+    interface IndexRenderLocals {
+      message: string
+    }
     @controller('/')
     class HomeController {
       @httpGet('/')
-      index() {
+      index(): RenderResult<IndexRenderLocals> {
         return new RenderResult('test', { message: 'test' })
       }
     }
