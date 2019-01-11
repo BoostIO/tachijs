@@ -10,7 +10,10 @@
     "!dist/specs/**/*",
     "types/**/*",
     "!types/examples/**/*",
-    "!types/specs/**/*"
+    "!types/specs/**/*",
+    "src/**/*",
+    "!src/examples/**/*",
+    "!src/specs/**/*"
   ],
   "scripts": {
     "dev": "nodemon",
