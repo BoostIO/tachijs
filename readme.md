@@ -837,6 +837,10 @@ tachijs will finalize response with `res.status(status).end(data, encoding)`.
 
 tachijs will finalize response with `res.status(status).json(data)`.
 
+#### `new NextResult(error?: any)`
+
+tachijs will finalize response with `next(error)`.
+
 #### `new RedirectResult(location: string, status?: number)`
 
 tachijs will finalize response with `res.redirect(location)` (or `res.redirect(status, location)` if the status is given).
