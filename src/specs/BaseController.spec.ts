@@ -1,3 +1,4 @@
+import request from 'supertest'
 import {
   BaseController,
   EndResult,
@@ -6,15 +7,20 @@ import {
   RenderResult,
   SendFileResult,
   SendResult,
-  SendStatusResult
+  SendStatusResult,
+  controller,
+  httpGet,
+  tachijs
 } from '../index'
+import { ConfigSetter } from '../tachijs'
+import { ErrorRequestHandler } from 'express'
 
 describe('BaseController', () => {
-  const controller = new BaseController()
+  const baseController = new BaseController()
   describe('#end', () => {
     it('returns EndResult', () => {
       // When
-      const result = controller.end('test')
+      const result = baseController.end('test')
 
       // Then
       expect(result).toBeInstanceOf(EndResult)
@@ -27,7 +33,7 @@ describe('BaseController', () => {
   describe('#json', () => {
     it('returns JSONResult', () => {
       // When
-      const result = controller.json({
+      const result = baseController.json({
         message: 'test'
       })
 
@@ -44,7 +50,7 @@ describe('BaseController', () => {
   describe('#redirect', () => {
     it('returns RedirectResult', () => {
       // When
-      const result = controller.redirect('/test')
+      const result = baseController.redirect('/test')
 
       // Then
       expect(result).toBeInstanceOf(RedirectResult)
@@ -57,7 +63,7 @@ describe('BaseController', () => {
   describe('#render', () => {
     it('returns RenderResult', () => {
       // When
-      const result = controller.render('test')
+      const result = baseController.render('test')
 
       // Then
       expect(result).toBeInstanceOf(RenderResult)
@@ -70,7 +76,7 @@ describe('BaseController', () => {
   describe('#sendFile', () => {
     it('returns SendFileResult', () => {
       // When
-      const result = controller.sendFile('/file-path')
+      const result = baseController.sendFile('/file-path')
 
       // Then
       expect(result).toBeInstanceOf(SendFileResult)
@@ -83,7 +89,7 @@ describe('BaseController', () => {
   describe('#send', () => {
     it('returns SendResult', () => {
       // When
-      const result = controller.send('test')
+      const result = baseController.send('test')
 
       // Then
       expect(result).toBeInstanceOf(SendResult)
@@ -96,13 +102,107 @@ describe('BaseController', () => {
   describe('#sendStatus', () => {
     it('returns SendStatusResult', () => {
       // When
-      const result = controller.sendStatus(201)
+      const result = baseController.sendStatus(201)
 
       // Then
       expect(result).toBeInstanceOf(SendStatusResult)
       expect(result).toMatchObject({
         status: 201
       })
+    })
+  })
+
+  describe('#inject', () => {
+    it('returns a registered service from the container', async () => {
+      // Given
+      enum ServiceTypes {
+        MyService = 'MyService'
+      }
+      class MyService {
+        sayHello() {
+          return 'Hello'
+        }
+      }
+
+      const container = {
+        [ServiceTypes.MyService]: MyService
+      }
+      @controller('/')
+      class HomeController extends BaseController {
+        @httpGet('/')
+        index() {
+          return this.inject<MyService>(ServiceTypes.MyService).sayHello()
+        }
+      }
+      const app = tachijs({
+        controllers: [HomeController],
+        container
+      })
+
+      // When
+      const response = await request(app).get('/')
+
+      // Then
+      expect(response).toMatchObject({
+        status: 200,
+        text: 'Hello'
+      })
+    })
+
+    it('throws an error if no service registered for the given key', async () => {
+      // Given
+      enum ServiceTypes {
+        MyService = 'MyService'
+      }
+      class MyService {
+        sayHello() {
+          return 'Hello'
+        }
+      }
+
+      @controller('/')
+      class HomeController extends BaseController {
+        @httpGet('/')
+        index() {
+          return this.inject<MyService>(ServiceTypes.MyService).sayHello()
+        }
+      }
+      const after: ConfigSetter = expressApp => {
+        const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+          res.status(500).json({
+            message: error.message
+          })
+        }
+        expressApp.use(errorHandler)
+      }
+      const app = tachijs({
+        controllers: [HomeController],
+        after
+      })
+
+      // When
+      const response = await request(app).get('/')
+
+      // Then
+      expect(response).toMatchObject({
+        status: 500,
+        text: JSON.stringify({
+          message: 'No service is registered for "MyService" key.'
+        })
+      })
+    })
+
+    it('returns a registered service from the container', async () => {
+      // Given
+      expect.assertions(1)
+      // When
+      try {
+        baseController.inject('something')
+      } catch (error) {
+        expect(error).toMatchObject({
+          message: 'Injector is not set.'
+        })
+      }
     })
   })
 })
