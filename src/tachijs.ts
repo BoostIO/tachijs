@@ -111,10 +111,10 @@ class TachiJSApp {
           controller.context = {
             req,
             res,
-            inject: (type: string) => {
-              if (!this.containerMap.has(type))
-                throw new Error(`No service is registered for "${type}" key.`)
-              return this.instantiate(this.containerMap.get(type))
+            inject: (key: string) => {
+              if (!this.containerMap.has(key))
+                throw new Error(`No service is registered for "${key}" key.`)
+              return this.instantiate(this.containerMap.get(key))
             }
           }
         }

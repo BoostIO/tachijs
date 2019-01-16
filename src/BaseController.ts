@@ -19,7 +19,7 @@ interface HttpContext {
 interface Context {
   req: express.Request
   res: express.Response
-  inject<S>(type: string): S
+  inject<S>(key: string): S
 }
 
 export class BaseController {
@@ -39,7 +39,7 @@ export class BaseController {
   }
 
   /* istanbul ignore next */
-  get injector(): ((type: string) => any) | undefined {
+  get injector(): ((key: string) => any) | undefined {
     // tslint:disable-next-line:no-console
     console.warn(
       'BaseController#injector will be deprecated from v1.0.0. Please use BaseController#context.inject.'
@@ -49,7 +49,7 @@ export class BaseController {
   }
 
   /* istanbul ignore next */
-  set injector(injector: ((type: string) => any) | undefined) {
+  set injector(injector: ((key: string) => any) | undefined) {
     // tslint:disable-next-line:no-console
     console.warn(
       'BaseController#injector will be deprecated from v1.0.0. Please use BaseController#context.inject.'
@@ -60,13 +60,13 @@ export class BaseController {
   }
 
   /* istanbul ignore next */
-  inject<S>(type: string): S {
+  inject<S>(key: string): S {
     // tslint:disable-next-line:no-console
     console.warn(
       'BaseController#inject will be deprecated from v1.0.0. Please use BaseController#context.inject.'
     )
     if (this.injector == null) throw new Error('Injector is not set.')
-    return this.injector(type)
+    return this.injector(key)
   }
 
   end(data: any, encoding?: string, status?: number) {
