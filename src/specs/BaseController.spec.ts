@@ -112,6 +112,92 @@ describe('BaseController', () => {
     })
   })
 
+  describe('#context.inject', () => {
+    it('returns a registered service from the container', async () => {
+      // Given
+      enum ServiceTypes {
+        MyService = 'MyService'
+      }
+      class MyService {
+        sayHello() {
+          return 'Hello'
+        }
+      }
+
+      const container = {
+        [ServiceTypes.MyService]: MyService
+      }
+      @controller('/')
+      class HomeController extends BaseController {
+        @httpGet('/')
+        index() {
+          return this.context!.inject<MyService>(
+            ServiceTypes.MyService
+          ).sayHello()
+        }
+      }
+      const app = tachijs({
+        controllers: [HomeController],
+        container
+      })
+
+      // When
+      const response = await request(app).get('/')
+
+      // Then
+      expect(response).toMatchObject({
+        status: 200,
+        text: 'Hello'
+      })
+    })
+
+    it('throws an error if no service registered for the given key', async () => {
+      // Given
+      enum ServiceTypes {
+        MyService = 'MyService'
+      }
+      class MyService {
+        sayHello() {
+          return 'Hello'
+        }
+      }
+
+      @controller('/')
+      class HomeController extends BaseController {
+        @httpGet('/')
+        index() {
+          return this.context!.inject<MyService>(
+            ServiceTypes.MyService
+          ).sayHello()
+        }
+      }
+      const after: ConfigSetter = expressApp => {
+        const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+          res.status(500).json({
+            message: error.message
+          })
+        }
+        expressApp.use(errorHandler)
+      }
+      const app = tachijs({
+        controllers: [HomeController],
+        after
+      })
+
+      // When
+      const response = await request(app).get('/')
+
+      // Then
+      expect(response).toMatchObject({
+        status: 500,
+        text: JSON.stringify({
+          message: 'No service is registered for "MyService" key.'
+        })
+      })
+    })
+  })
+
+  // Deprecated from v1
   describe('#inject', () => {
     it('returns a registered service from the container', async () => {
       // Given

@@ -108,14 +108,14 @@ class TachiJSApp {
       try {
         const controller = this.instantiate(ControllerConstructor)
         if (controller instanceof BaseController) {
-          controller.httpContext = {
+          controller.context = {
             req,
-            res
-          }
-          controller.injector = (type: string) => {
-            if (!this.containerMap.has(type))
-              throw new Error(`No service is registered for "${type}" key.`)
-            return this.instantiate(this.containerMap.get(type))
+            res,
+            inject: (type: string) => {
+              if (!this.containerMap.has(type))
+                throw new Error(`No service is registered for "${type}" key.`)
+              return this.instantiate(this.containerMap.get(type))
+            }
           }
         }
         const method = controller[methodMeta.propertyKey]
