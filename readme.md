@@ -441,28 +441,41 @@ class HomeController extends BaseController {
 
 `BaseController` has methods for all build-in results, Please see our api documentation below.
 
-##### `BaseController#httpContext`
+##### `BaseController#context`
 
-You may want to share some common methods via your own base controller. But, sadly, only methods, applied `httpGet`or `httpPost` kind, can use parameter decorators to access data from `req` or `res`.
+You may want to share some common methods via your own base controller. But, sadly, it is not possible to use decorators to get objects from `req` or `res` and services provided by `@inject`.
 
-To tackle this problems, we introduce `httpContext`. So tachijs will expose `req` and `res` via `httpContext` if your controller is extended from `BaseController`.
+To make it possible, we introduce `context`. Which expose `req`, `res` and `inject` method via `context` if your controller is extended from `BaseController`.
+
+```ts
+interface Context {
+  req: express.Request
+  res: express.Response
+  inject<S>(key: string): S
+}
+```
 
 ```ts
 import { BaseController, controller, httpPost } from 'tachijs'
 
 class MyBaseController extends BaseController {
   async getUserConfig() {
-    // When unit testing, httpContext is not defined.
-    if (this.httpContext == null) {
+    // When unit testing, `context` is not defined.
+    if (this.context == null) {
       return new UserConfig()
     }
 
-    // Now we can get the current user
-    const currentUser = this.httpContext.req.user
+    const { req, inject } = this.context
 
-    return UserConfig.findOne({
-      user: currentUser._id
-    })
+    // Now we can get the current user from `req`
+    const currentUser = req.user
+
+    // And inject any services from the container.
+    const userConfigService = inject<UserConfigService>(
+      ServiceTypes.UserConfigService
+    )
+
+    return userConfigService.findByUserId(userId)
   }
 }
 
@@ -479,64 +492,7 @@ class HomeController {
 }
 ```
 
-To test `HomeController#settings`...
-
-```ts
-describe('HomeController#settings', () => {
-  it('renders userConfig', async () => {
-    // Given
-    const controller = new HomeController()
-    const mockUserConfig = await UserConfig.create({...})
-    // Replace method with mockup
-    controller.getUserConfig = () => mockUserConfig
-
-    // When
-    const result = controller.settings()
-
-    // Then
-    expect(result).toMatch({
-      locals: {
-        userConfig: mockUserConfig
-      }
-    })
-  })
-})
-```
-
-##### `BaseController#inject`
-
-Like `BaseController#httpContext`, you may want to call services from your container in your base controller.
-
-To make it possible, we introduce `BaseController#inject`.
-
-```ts
-import { BaseController, controller, httpPost } from 'tachijs'
-
-class MyBaseController extends BaseController {
-  async getUserConfig(userId: string) {
-    // Find by userId via UserConfigService
-    return this.inject<UserConfigService>(
-      ServiceTypes.UserConfigService
-    ).findByUserId(userId)
-  }
-}
-```
-
-`BaseController#inject` is a simple function that uses `BaseController#injector` which is given by tachijs.
-When you do unit testing for your base controller, `BaseController#injector` is undefined.
-
-```ts
-class MyBaseController extends BaseController {
-  async getUserConfig(userId: string) {
-    if (this.injector == null) {
-      return dummyUserConfig
-    }
-    return this.inject<UserConfigService>(
-      ServiceTypes.UserConfigService
-    ).findByUserId(userId)
-  }
-}
-```
+> `#httpContext`, `#inject` and `#injector` will be deprecated from v1.0.0. Please use `#context`
 
 #### Customize result
 
@@ -698,9 +654,75 @@ class NotificationService {
 
 ### Bad practices
 
+Please check this section too to keep your controllers testable.
+
 #### Execute `res.send` or `next` inside of controllers or `@handlerParam`
 
 Please don't do that. It just make your controller untestable. If you want some special behaviors after your methods are executed, please try to implement them with `BaseResult`.
+
+**Do**
+
+```ts
+class HelloResult extends BaseResult {
+  async execute(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    res.send('Hello')
+  }
+}
+
+class HomePageController extends BaseController {
+  @httpGet('/')
+  index() {
+    // Now we can test it by just checking the method returns an instance of `HelloResult`.
+    return new HelloResult()
+  }
+}
+```
+
+**Don't**
+
+```ts
+class HomePageController {
+  @httpGet('/')
+  index(@handlerParam((req, res) => res) res: expressResponse) {
+    // We have to make mock-up for express.Response to test
+    res.send('Hello')
+  }
+}
+```
+
+#### Access `BaseController#context` in your descendant controllers
+
+It is designed to be used inside of your base controller to make unit testing easy.
+
+**Do**
+
+```ts
+class MyBaseController extends BaseController {
+  doSomethingWithContext() {
+    if (this.context == null) {
+      // on unit testing
+      return
+    }
+    // on live
+  }
+}
+```
+
+**Don't**
+
+```ts
+class HomePageController extends MyBaseController {
+  @httpGet('/')
+  index() {
+    // We have to make mock-up everything to test
+    this.context!.req....
+  }
+}
+```
 
 ## APIs
 
@@ -843,11 +865,12 @@ Inject `req.session`.
 
 ### `BaseController`
 
-A base for controller which have lots of helper methods for returning built-in results. Also, it allows another way to access properties of `req` and `res` without decorators.
+A base for controller which have lots of helper methods for returning built-in results. Also, it allows another way to access properties of `req`, `res` and `inject` without any decorators.
 
-- `#httpContext` tachijs will set `req` and `res` to this property. So, when unit testing, it is not defined.
-- `#injector(type: string): any` tachijs will set injector so you can inject any services from the current container. So it is not defined neither when unit testing.
-- `#inject<S>(type: string): S` Use `#injector`. If `#injector` is not set, it will throw an error.
+- `#context` tachijs will set `req`, `res` and `inject` method to this property. So, when unit testing, it is not defined.
+  - `#context.req` Raw express request instance
+  - `#context.req` Raw express response instance
+  - `#inject<S>(key: string): S` A method to access a registered service by the given key. It is almost same to `@inject` decorator. (`@inject<ServiceTypes.SomeService> someService: SomeService` => `const someService = this.inject<SomeService>(ServiceTypes.SomeService)`)
 - `#end(data: any, encoding?: string, status?: number): EndResult`
 - `#json(data: any, status?: number): JSONResult`
 - `#redirect(location: string, status?: number): RedirectResult`

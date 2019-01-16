@@ -206,13 +206,13 @@ describe('tachijs', () => {
     })
   })
 
-  it('exposes httpContext if controller is extended from BaseController', async () => {
+  it('exposes context if controller is extended from BaseController', async () => {
     // Given
     @controller('/')
     class HomeController extends BaseController {
       @httpGet('/')
       index() {
-        return this.httpContext!.req.query.message
+        return this.context!.req.query.message
       }
     }
     const app = tachijs({
