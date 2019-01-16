@@ -6,9 +6,10 @@ import {
   RenderResult,
   SendFileResult,
   SendResult,
-  SendStatusResult
+  SendStatusResult,
+  RenderResultCallback,
+  SendFileResultCallback
 } from './results'
-import { RenderResultCallback, SendFileResultCallback } from './results'
 
 interface HttpContext {
   req: express.Request
@@ -17,6 +18,12 @@ interface HttpContext {
 
 export class BaseController {
   httpContext?: HttpContext
+  injector: (type: string) => any
+
+  inject<S>(type: string): S {
+    if (this.injector == null) throw new Error('Injector is not set.')
+    return this.injector(type)
+  }
 
   end(data: any, encoding?: string, status?: number) {
     return new EndResult(data, encoding, status)

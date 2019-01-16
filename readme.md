@@ -503,6 +503,41 @@ describe('HomeController#settings', () => {
 })
 ```
 
+##### `BaseController#inject`
+
+Like `BaseController#httpContext`, you may want to call services from your container in your base controller.
+
+To make it possible, we introduce `BaseController#inject`.
+
+```ts
+import { BaseController, controller, httpPost } from 'tachijs'
+
+class MyBaseController extends BaseController {
+  async getUserConfig(userId: string) {
+    // Find by userId via UserConfigService
+    return this.inject<UserConfigService>(
+      ServiceTypes.UserConfigService
+    ).findByUserId(userId)
+  }
+}
+```
+
+`BaseController#inject` is a simple function that uses `BaseController#injector` which is given by tachijs.
+When you do unit testing for your base controller, `BaseController#injector` is undefined.
+
+```ts
+class MyBaseController extends BaseController {
+  async getUserConfig(userId: string) {
+    if (this.injector == null) {
+      return dummyUserConfig
+    }
+    return this.inject<UserConfigService>(
+      ServiceTypes.UserConfigService
+    ).findByUserId(userId)
+  }
+}
+```
+
 #### Customize result
 
 If you want to have customized result behavior, you can do it with `BaseResult`.
@@ -811,6 +846,8 @@ Inject `req.session`.
 A base for controller which have lots of helper methods for returning built-in results. Also, it allows another way to access properties of `req` and `res` without decorators.
 
 - `#httpContext` tachijs will set `req` and `res` to this property. So, when unit testing, it is not defined.
+- `#injector(type: string): any` tachijs will set injector so you can inject any services from the current container. So it is not defined neither when unit testing.
+- `#inject<S>(type: string): S` Use `#injector`. If `#injector` is not set, it will throw an error.
 - `#end(data: any, encoding?: string, status?: number): EndResult`
 - `#json(data: any, status?: number): JSONResult`
 - `#redirect(location: string, status?: number): RedirectResult`
