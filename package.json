@@ -28,7 +28,14 @@
     "test:types": "tsc --noEmit",
     "prepublishOnly": "npm run test && npm run build"
   },
-  "keywords": [],
+  "keywords": [
+    "expressjs",
+    "typescript",
+    "decorators",
+    "dependency-injection",
+    "inversifyjs",
+    "nestjs"
+  ],
   "author": "Junyoung Choi <fluke8259@gmail.com> (https://github.com/rokt33r)",
   "homepage": "https://github.com/BoostIO/tachijs#readme",
   "license": "MIT",
