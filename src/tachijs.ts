@@ -51,7 +51,6 @@ class TachiJSApp {
     if (before != null) before(app)
 
     controllers.map(ControllerConstructor => {
-      const router = express.Router()
       const controllerMeta = getControllerMeta(ControllerConstructor)
       if (controllerMeta == null)
         throw new Error(
@@ -59,6 +58,7 @@ class TachiJSApp {
             ControllerConstructor.name
           }".`
         )
+      const router = express.Router(controllerMeta.routerOptions)
 
       this.registerMiddlewares(router, controllerMeta.middlewares)
 

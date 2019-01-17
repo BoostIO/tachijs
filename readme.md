@@ -182,6 +182,26 @@ class HomeController() {
 }
 ```
 
+### Configure router options
+
+Tachijs will create and register a router for each controller.
+
+So you can provide router options via `@controller` decorator.
+
+```ts
+@controller('/:name', [], {
+  // Provide mergeParams option to express router.
+  mergeParams: true
+})
+class HomeController {
+  @httpGet('/hello')
+  // Now routes in the controller can access params.
+  index(@reqParams('name') name: string) {
+    return `Hello, ${name}`
+  }
+}
+```
+
 ### Access `req.params`, `req.query` and `req.body` via decorators
 
 You can access them via `@reqParams`, `@reqQuery` and `@reqBody`.
@@ -751,19 +771,20 @@ type ConfigSetter = (app: express.Application) => void
 - `container` Optional. A place for registered services.
   If you want to use DI, you have to register services to here first.
 
-### `@controller(path: string, middlewares: RequestHandler[] = [])`
+### `@controller(path: string, middlewares: RequestHandler[] = [], routerOptions: RouterOptions = {})`
 
 It marks class as a controller.
 
-- `path` target path.
+- `path` Target path.
 - `middlewares` Optional. Array of middlewares.
+- `routerOptions` Optional. Express router options.
 
 ### `@httpMethod(method: string, path: string, middlewares: RequestHandler[] = [])`
 
 It marks method as a request handler.
 
-- `method` target http methods, `'get'`, `'post'`, `'put'`, `'patch'`, `'delete'`, `'options'`, `'head'` or `'all'` are available. (`'all'` means any methods.)
-- `path` target path.
+- `method` Target http methods, `'get'`, `'post'`, `'put'`, `'patch'`, `'delete'`, `'options'`, `'head'` or `'all'` are available. (`'all'` means any methods.)
+- `path` Target path.
 - `middlewares` Optional. Array of middlewares.
 
 tachijs also provides shortcuts for `@httpMethod`.
