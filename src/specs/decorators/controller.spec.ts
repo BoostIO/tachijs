@@ -1,6 +1,7 @@
 import tachijs, { ConfigSetter, controller, httpGet } from '../../index'
 import request from 'supertest'
 import { ErrorRequestHandler, RequestHandler } from 'express'
+import { reqParams } from '../../decorators'
 
 describe('controller', () => {
   it('sets path to router', async () => {
@@ -84,5 +85,30 @@ describe('controller', () => {
       text: 'Hello'
     })
     expect(spy).toBeCalled()
+  })
+
+  it('sets router options', async () => {
+    // Given
+    @controller('/:name', [], {
+      mergeParams: true
+    })
+    class HomeController {
+      @httpGet('/hello')
+      index(@reqParams('name') name: string) {
+        return `Hello, ${name}`
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app).get('/test/hello')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello, test'
+    })
   })
 })

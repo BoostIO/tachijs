@@ -1,11 +1,12 @@
 import { MetaKey } from '../consts'
-import { RequestHandler } from 'express'
+import { RequestHandler, RouterOptions } from 'express'
 
 const metaKey = MetaKey.controller
 
 export interface ControllerMeta {
   path: string
   middlewares: RequestHandler[]
+  routerOptions: RouterOptions
 }
 
 export function getControllerMeta(
@@ -21,11 +22,16 @@ export function setControllerMeta(
   Reflect.defineMetadata(metaKey, meta, ControllerConstructor)
 }
 
-export function controller(path: string, middlewares: RequestHandler[] = []) {
+export function controller(
+  path: string,
+  middlewares: RequestHandler[] = [],
+  routerOptions: RouterOptions = {}
+) {
   return function controllerDecorator(target: any) {
     const meta: ControllerMeta = {
       path,
-      middlewares
+      middlewares,
+      routerOptions
     }
 
     setControllerMeta(target, meta)
