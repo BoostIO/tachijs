@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/BoostIO/tachijs.svg?branch=master)](https://travis-ci.com/BoostIO/tachijs)
 [![codecov](https://codecov.io/gh/BoostIO/tachijs/branch/master/graph/badge.svg)](https://codecov.io/gh/BoostIO/tachijs)
 [![NPM download](https://img.shields.io/npm/dm/tachijs.svg)](https://www.npmjs.com/package/tachijs)
+[![Supported by BoostIO](https://github.com/BoostIO/boostio-materials/raw/master/v1/boostio-shield-v1.svg?sanitize=true)](https://boostio.co)
 
 > [Tachi(太刀) https://en.wikipedia.org/wiki/Tachi](https://en.wikipedia.org/wiki/Tachi)
 
