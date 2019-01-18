@@ -700,6 +700,7 @@ const container = {
   [ServiceTypes.NameService]: NameService,
   [ServiceTypes.MyService]: MyService
 }
+
 // Create injector
 const injector = new Injector(container)
 
