@@ -546,7 +546,7 @@ export class RedirectResult extends BaseResult {
 }
 ```
 
-### Dependency injection
+#### Dependency injection
 
 To make controllers more testable, tachijs provides dependency injection.
 
@@ -670,6 +670,43 @@ class NotificationService {
     await this.mailer.sendEmail('Welcome!')
   }
 }
+```
+
+##### DI without `tachijs`
+
+When some testing or just writing scripts using services, you might want to use DI without `tachijs` function.
+So we exposed `Injector` class which is used by `tachijs`.
+
+```ts
+enum ServiceTypes {
+  NameService = 'NameService',
+  MyService = 'MyService'
+}
+class NameService {
+  getName() {
+    return 'Test'
+  }
+}
+class MyService {
+  constructor(
+    @inject(ServiceTypes.NameService) private nameService: NameService
+  ) {}
+
+  sayHello() {
+    return `Hello, ${this.nameService.getName()}`
+  }
+}
+const container = {
+  [ServiceTypes.NameService]: NameService,
+  [ServiceTypes.MyService]: MyService
+}
+// Create injector
+const injector = new Injector(container)
+
+// Instantiate by a key
+const myService = injector.inject<MyService>(ServiceTypes.MyService)
+// Instantiate by a constructor
+const myService = injector.instantiate(MyService)
 ```
 
 ### Bad practices
@@ -964,6 +1001,20 @@ tachijs will finalize response with `res.sendStatus(status)`.
 ### `@inject(key: string)`
 
 Inject a registered service in container by the given `key`.
+
+### `class Injector`
+
+#### `new Injector<C>(container: C)`
+
+Instantiate an injector with container
+
+#### `#instantiate(Constructor: any): any`
+
+Instantiate a service constructor. If the constructor has injected services, this method instantiate and inject them by `#inject` method.
+
+#### `#inject<S = any>(key: string): S`
+
+Instantiate a service by a key from Container. If there is no service for the given key, it will throws an error.
 
 ## License
 
