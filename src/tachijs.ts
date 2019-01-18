@@ -3,15 +3,13 @@ import {
   HttpMethodMeta,
   getControllerMeta,
   getHttpMethodMetaList,
-  getHandlerParamMetaList,
-  getInjectMetaList
+  getHandlerParamMetaList
 } from './decorators'
 import { BaseController } from './BaseController'
 import { BaseResult } from './results'
+import { Injector } from './Injector'
 
 export type ConfigSetter = (app: express.Application) => void
-
-export type Instantiator = (Constructor: any) => any
 
 export interface TachiJSOptions<C = {}> {
   app?: express.Application
@@ -30,11 +28,11 @@ export function tachijs<C>(options: TachiJSOptions<C>): express.Application {
     after
   } = options
 
-  return new TachiJSApp(app, controllers, container, before, after).build()
+  return new TachiJSApp<C>(app, controllers, container, before, after).build()
 }
 
-class TachiJSApp {
-  private readonly containerMap: Map<string, any>
+class TachiJSApp<C> {
+  private readonly injector: Injector<C>
   constructor(
     private readonly app: express.Application,
     private readonly controllers: any[],
@@ -42,7 +40,7 @@ class TachiJSApp {
     private readonly before?: ConfigSetter,
     private readonly after?: ConfigSetter
   ) {
-    this.containerMap = new Map(Object.entries(container))
+    this.injector = new Injector(container)
   }
 
   build() {
@@ -72,21 +70,6 @@ class TachiJSApp {
     return app
   }
 
-  instantiate(Constructor: any) {
-    const injectMetaList = getInjectMetaList(Constructor)
-    const args = injectMetaList.map(injectMeta => {
-      if (this.containerMap.get(injectMeta.key))
-        return this.instantiate(this.containerMap.get(injectMeta.key))
-      throw new Error(
-        `The constructor for "${
-          injectMeta.key
-        }" is not registered in the current container.`
-      )
-    }) as any[]
-
-    return new Constructor(...args)
-  }
-
   registerMiddlewares(router: Router, middlewares: RequestHandler[]) {
     middlewares.map(middleware => router.use(middleware))
   }
@@ -106,15 +89,13 @@ class TachiJSApp {
       next: express.NextFunction
     ) => {
       try {
-        const controller = this.instantiate(ControllerConstructor)
+        const controller = this.injector.instantiate(ControllerConstructor)
         if (controller instanceof BaseController) {
           controller.context = {
             req,
             res,
             inject: (key: string) => {
-              if (!this.containerMap.has(key))
-                throw new Error(`No service is registered for "${key}" key.`)
-              return this.instantiate(this.containerMap.get(key))
+              return this.injector.inject(key)
             }
           }
         }

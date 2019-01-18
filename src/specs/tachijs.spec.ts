@@ -201,7 +201,7 @@ describe('tachijs', () => {
       status: 500,
       text: JSON.stringify({
         message:
-          'The constructor for "MyService" is not registered in the current container.'
+          'No service is registered for "MyService" key. (While instantiating "HomeController")'
       })
     })
   })
