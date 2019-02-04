@@ -94,39 +94,29 @@ describe('controller', () => {
       spy()
       next()
     }
-
-    @controller('/test', [middleware])
-    class HomeController {
+    @controller('/', [middleware])
+    class PreemptiveController {
       @httpGet('/')
       index() {
         return 'Hello'
       }
     }
-    @controller('/test')
-    class UserController {
-      @httpGet('/user')
+    @controller('/')
+    class TestController {
+      @httpGet('/test')
       index() {
         return 'User'
       }
     }
     const app = tachijs({
-      controllers: [HomeController, UserController]
+      controllers: [PreemptiveController, TestController]
     })
 
     // When
-    const homeResponse = await request(app).get('/test')
-    const userResponse = await request(app).get('/test/user')
+    await request(app).get('/test')
 
     // Then
-    expect(homeResponse).toMatchObject({
-      status: 200,
-      text: 'Hello'
-    })
-    expect(userResponse).toMatchObject({
-      status: 200,
-      text: 'User'
-    })
-    expect(spy).toBeCalledTimes(1)
+    expect(spy).not.toBeCalled()
   })
 
   it('sets router options', async () => {
