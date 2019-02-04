@@ -1,6 +1,7 @@
-import express, { RequestHandler, Router } from 'express'
+import express from 'express'
 import {
   HttpMethodMeta,
+  ControllerMeta,
   getControllerMeta,
   getHttpMethodMetaList,
   getHandlerParamMetaList
@@ -58,9 +59,7 @@ class TachiJSApp<C> {
         )
       const router = express.Router(controllerMeta.routerOptions)
 
-      this.registerMiddlewares(router, controllerMeta.middlewares)
-
-      this.bindControllerRoutes(router, ControllerConstructor)
+      this.bindControllerRoutes(router, ControllerConstructor, controllerMeta)
 
       app.use(controllerMeta.path, router)
     })
@@ -70,15 +69,15 @@ class TachiJSApp<C> {
     return app
   }
 
-  registerMiddlewares(router: Router, middlewares: RequestHandler[]) {
-    middlewares.map(middleware => router.use(middleware))
-  }
-
-  bindControllerRoutes(router: express.Router, ControllerConstructor: any) {
+  bindControllerRoutes(
+    router: express.Router,
+    ControllerConstructor: any,
+    controllerMeta: ControllerMeta
+  ) {
     const methodList = getHttpMethodMetaList(ControllerConstructor)
     methodList.map(methodMeta => {
       const handler = this.makeRequestHandler(ControllerConstructor, methodMeta)
-      this.bindHandler(router, methodMeta, handler)
+      this.bindHandler(router, controllerMeta, methodMeta, handler)
     })
   }
 
@@ -133,33 +132,39 @@ class TachiJSApp<C> {
 
   bindHandler(
     router: express.Router,
+    controllerMeta: ControllerMeta,
     methodMeta: HttpMethodMeta,
     handler: express.RequestHandler
   ) {
+    const middlewares = [
+      ...controllerMeta.middlewares,
+      ...methodMeta.middlewares
+    ]
+
     switch (methodMeta.method) {
       case 'get':
-        router.get(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.get(methodMeta.path, middlewares, handler)
         break
       case 'post':
-        router.post(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.post(methodMeta.path, middlewares, handler)
         break
       case 'put':
-        router.put(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.put(methodMeta.path, middlewares, handler)
         break
       case 'patch':
-        router.patch(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.patch(methodMeta.path, middlewares, handler)
         break
       case 'delete':
-        router.delete(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.delete(methodMeta.path, middlewares, handler)
         break
       case 'options':
-        router.options(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.options(methodMeta.path, middlewares, handler)
         break
       case 'head':
-        router.head(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.head(methodMeta.path, middlewares, handler)
         break
       case 'all':
-        router.all(methodMeta.path, ...methodMeta.middlewares, handler)
+        router.all(methodMeta.path, middlewares, handler)
         break
       default:
         throw new Error(`"${methodMeta.method}" is not a valid method.`)

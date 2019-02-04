@@ -87,6 +87,48 @@ describe('controller', () => {
     expect(spy).toBeCalled()
   })
 
+  it('sets middlewares individually', async () => {
+    // Given
+    const spy = jest.fn()
+    const middleware: RequestHandler = (req, res, next) => {
+      spy()
+      next()
+    }
+
+    @controller('/test', [middleware])
+    class HomeController {
+      @httpGet('/')
+      index() {
+        return 'Hello'
+      }
+    }
+    @controller('/test')
+    class UserController {
+      @httpGet('/user')
+      index() {
+        return 'User'
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController, UserController]
+    })
+
+    // When
+    const homeResponse = await request(app).get('/test')
+    const userResponse = await request(app).get('/test/user')
+
+    // Then
+    expect(homeResponse).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
+    expect(userResponse).toMatchObject({
+      status: 200,
+      text: 'User'
+    })
+    expect(spy).toBeCalledTimes(1)
+  })
+
   it('sets router options', async () => {
     // Given
     @controller('/:name', [], {
