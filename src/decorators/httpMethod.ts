@@ -38,13 +38,13 @@ export function httpMethod(
     const previousHttpMethodList = getHttpMethodMetaList(target.constructor)
 
     const newHttpMethodList = [
+      ...previousHttpMethodList,
       {
         method,
         path,
         propertyKey,
         middlewares
-      },
-      ...previousHttpMethodList
+      }
     ]
 
     setHttpMethodMetaList(target.constructor, newHttpMethodList)

@@ -32,6 +32,36 @@ describe('tachijs', () => {
     })
   })
 
+  it('registers controllers from top to bottom', async () => {
+    // Given
+    @controller('/')
+    class HomeController {
+      @httpGet('/')
+      index() {
+        return 'Hello'
+      }
+    }
+    @controller('/')
+    class SecondController {
+      @httpGet('/')
+      index() {
+        return 'Hello Second'
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController, SecondController]
+    })
+
+    // When
+    const response = await request(app).get('/')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello'
+    })
+  })
+
   it('throws an error if there is an invalid controller', () => {
     // Given
     class HomeController {
