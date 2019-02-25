@@ -69,11 +69,11 @@ export class BaseController {
     return this.injector(key)
   }
 
-  end(data: any, encoding?: string, status?: number) {
+  end<D>(data: D, encoding?: string, status?: number): EndResult<D> {
     return new EndResult(data, encoding, status)
   }
 
-  json(data: any, status?: number) {
+  json<D>(data: D, status?: number): JSONResult<D> {
     return new JSONResult(data, status)
   }
 
@@ -81,12 +81,12 @@ export class BaseController {
     return new RedirectResult(location, status)
   }
 
-  render(
+  render<D>(
     view: string,
-    locals?: any,
+    locals?: D,
     callback?: RenderResultCallback,
     status?: number
-  ) {
+  ): RenderResult<D> {
     return new RenderResult(view, locals, callback, status)
   }
 
@@ -99,7 +99,7 @@ export class BaseController {
     return new SendFileResult(filePath, options, callback, status)
   }
 
-  send(data: any, status?: number) {
+  send<D>(data: D, status?: number): SendResult<D> {
     return new SendResult(data, status)
   }
 
