@@ -1,6 +1,7 @@
 import express from 'express'
 
-const reflectMetadataIsAvailable = typeof Reflect.getMetadata !== 'undefined'
+const reflectMetadataIsAvailable =
+  typeof (Reflect as any).getMetadata !== 'undefined'
 
 const handlerParamMetaMap = new Map<
   any,
@@ -60,7 +61,7 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
       selector
     }
     if (reflectMetadataIsAvailable) {
-      handlerParamMeta.paramType = Reflect.getMetadata(
+      handlerParamMeta.paramType = (Reflect as any).getMetadata(
         'design:paramtypes',
         target,
         propertyKey
