@@ -69,8 +69,8 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
     }
 
     const meta: HandlerParamMetaList = [
-      handlerParamMeta,
-      ...previousHandlerParamList
+      ...previousHandlerParamList,
+      handlerParamMeta
     ]
 
     setHandlerParamMetaList(target.constructor, meta, propertyKey)
