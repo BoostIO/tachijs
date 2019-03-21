@@ -121,7 +121,9 @@ class TachiJSApp<C> {
           await result.execute(req, res, next)
           return
         }
-        res.send(result)
+        if (!res.finished) {
+          res.send(result)
+        }
         return
       } catch (error) {
         next(error)
