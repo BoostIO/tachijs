@@ -1,10 +1,3 @@
-export const MetaKey = {
-  controller: 'tachijs:controller',
-  httpMethod: 'tachijs:httpMethod',
-  handlerParam: 'tachijs:handlerParam',
-  inject: 'tachijs:inject'
-}
-
 export enum HttpStatus {
   CONTINUE = 100,
   SWITCHING_PROTOCOLS = 101,
