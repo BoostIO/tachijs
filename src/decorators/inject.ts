@@ -1,6 +1,4 @@
-import { MetaKey } from '../consts'
-
-const metaKey = MetaKey.inject
+const injectMetaMap = new Map<any, InjectMetaList>()
 
 export interface InjectMeta {
   index: number
@@ -10,13 +8,13 @@ export interface InjectMeta {
 export type InjectMetaList = InjectMeta[]
 
 export function getInjectMetaList(controller: any): InjectMetaList {
-  const metaList = Reflect.getMetadata(metaKey, controller)
+  const metaList = injectMetaMap.get(controller)
   if (metaList == null) return []
   return metaList
 }
 
 export function setInjectMetaList(controller: any, meta: InjectMetaList): void {
-  Reflect.defineMetadata(metaKey, meta, controller)
+  injectMetaMap.set(controller, meta)
 }
 
 export function inject(key: string) {
