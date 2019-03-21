@@ -1,5 +1,4 @@
 // tslint:disable:no-console
-import 'reflect-metadata' // You have to import this to enable decorators.
 import tachijs, {
   ConfigSetter,
   controller,
@@ -10,7 +9,6 @@ import tachijs, {
   inject,
   BaseController
 } from '../../'
-import { IsString } from 'class-validator'
 import bodyParser from 'body-parser'
 
 enum ServiceTypes {
@@ -46,12 +44,6 @@ class NotificationService {
   }
 }
 
-// Prepare class validator
-class NotifyRequestBody {
-  @IsString()
-  message: string
-}
-
 @controller('/')
 class HomeController extends BaseController {
   constructor(
@@ -74,8 +66,7 @@ class HomeController extends BaseController {
   }
 
   @httpPost('/notify')
-  // Apply class validator so we can be sure body is valid
-  async notify(@reqBody(NotifyRequestBody) body: NotifyRequestBody) {
+  async notify(@reqBody() body: any) {
     await this.notifier.notifyMessage(body.message)
 
     return this.redirect('/')
