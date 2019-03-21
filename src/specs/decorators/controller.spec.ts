@@ -1,7 +1,7 @@
 import tachijs, { ConfigSetter, controller, httpGet } from '../../index'
 import request from 'supertest'
-import { ErrorRequestHandler, RequestHandler } from 'express'
-import { reqParams } from '../../decorators'
+import { ErrorRequestHandler, RequestHandler, Response } from 'express'
+import { reqParams, handlerParam } from '../../decorators'
 
 describe('controller', () => {
   it('sets path to router', async () => {
@@ -128,6 +128,35 @@ describe('controller', () => {
       @httpGet('/hello')
       index(@reqParams('name') name: string) {
         return `Hello, ${name}`
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app).get('/test/hello')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 200,
+      text: 'Hello, test'
+    })
+  })
+
+  it('does not send data if response is already sent', async () => {
+    // Given
+    function injectRes() {
+      return handlerParam((req, res) => res)
+    }
+    @controller('/:name', [], {
+      mergeParams: true
+    })
+    class HomeController {
+      @httpGet('/hello')
+      index(@injectRes() res: Response) {
+        res.send('Hello, test')
+        return 'Other thing'
       }
     }
     const app = tachijs({
