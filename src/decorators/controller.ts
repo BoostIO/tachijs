@@ -1,7 +1,6 @@
-import { MetaKey } from '../consts'
 import { RequestHandler, RouterOptions } from 'express'
 
-const metaKey = MetaKey.controller
+const controllerMetaMap = new Map<any, ControllerMeta>()
 
 export interface ControllerMeta {
   path: string
@@ -12,14 +11,14 @@ export interface ControllerMeta {
 export function getControllerMeta(
   ControllerConstructor: any
 ): ControllerMeta | undefined {
-  return Reflect.getMetadata(metaKey, ControllerConstructor)
+  return controllerMetaMap.get(ControllerConstructor)
 }
 
 export function setControllerMeta(
   ControllerConstructor: any,
   meta: ControllerMeta
 ): void {
-  Reflect.defineMetadata(metaKey, meta, ControllerConstructor)
+  controllerMetaMap.set(ControllerConstructor, meta)
 }
 
 export function controller(
