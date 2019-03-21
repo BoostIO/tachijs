@@ -1,7 +1,6 @@
-import { MetaKey } from '../consts'
 import { RequestHandler } from 'express'
 
-const metaKey = MetaKey.httpMethod
+const httpMethodMetaMap = new Map<any, HttpMethodMetaList>()
 
 export interface HttpMethodMeta {
   method: string
@@ -13,7 +12,7 @@ export interface HttpMethodMeta {
 export type HttpMethodMetaList = HttpMethodMeta[]
 
 export function getHttpMethodMetaList(controller: any): HttpMethodMetaList {
-  const metaList = Reflect.getMetadata(metaKey, controller)
+  const metaList = httpMethodMetaMap.get(controller)
   if (metaList == null) return []
   return metaList
 }
@@ -22,7 +21,7 @@ export function setHttpMethodMetaList(
   controller: any,
   meta: HttpMethodMetaList
 ): void {
-  Reflect.defineMetadata(metaKey, meta, controller)
+  httpMethodMetaMap.set(controller, meta)
 }
 
 export function httpMethod(
