@@ -32,17 +32,16 @@ Luckily, TachiJS tackles those problems. If you have other ideas, please create 
 ### Install tachijs
 
 ```sh
-npm i tachijs reflect-metadata
+npm i tachijs
 ```
 
-Add two compiler options, `experimentalDecorators` and `emitDecoratorMetadata`, to `tsconfig.json`.
+Enable `experimentalDecorators` of `compilerOptions` to `tsconfig.json`.
 
 ```json
 {
   "compilerOptions": {
     ...
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     ...
   }
 }
@@ -261,43 +260,7 @@ We also provide `reqHeaders`, `reqCookies` and `reqSession` for `req.headers`, `
 
 #### Body validation
 
-`@reqBody` supports validation via `class-validator`.
-
-Please install `class-validator` package first.
-
-```sh
-npm install class-validator
-```
-
-```ts
-import { IsString } from 'class-validator'
-
-class PostDTO {
-  @IsString()
-  title: string
-
-  @IsString()
-  content: string
-}
-
-
-@controller('/posts')
-class PostController() {
-  @httpPost('/')
-  // Tachijs can access `PostDTO` via reflect-metadata.
-  async create(@reqBody() body: PostDTO) {
-    // `body` is already validated and transformed into an instance of `PostDTO`.
-    // So we don't need any extra validation.
-    const post = await Post.create({
-      ...body
-    })
-
-    return {
-      post
-    }
-  }
-}
-```
+It has been deprecated from v1. We'll provide this feature as a separated module.
 
 #### Custom parameter decorators!
 
@@ -355,19 +318,20 @@ export function cookieSetter() {
 }
 ```
 
-##### `design:paramtype`
+##### `meta.paramType`
 
-Moreover, tachijs exposes metadata of parameters to forth argument. So you can make your custom validator for query with `class-transformer-validator` like below. (`req.body` is also using this.)
+If you are using `reflect-metadata`, tachijs exposes `paramType` to the forth argument, `meta`, of `handlerParam` from `design:paramtypes`. With this feature, you could access argument types on runtime. The below example is validating and transforming query with DTO class by class-validator.
 
 ```ts
+import 'reflect-metadata'
 import { controller, httpGet, handlerParam } from 'tachijs'
 import { IsString } from 'class-validator'
 import { transformAndValidate } from 'class-transformer-validator'
 
 function validatedQuery() {
   return handlerParam((req, res, next, meta) => {
-    // meta.paramType is from `design:paramtypes`.
-    // It is `Object` if the param type is unknown or any.
+    // Now tachijs will expose `paramType`.
+    // If the param type is unknown or any, paramType will become `Object`.
     return meta.paramType !== Object
       ? transformAndValidate(meta.paramType, req.query)
       : req.query
@@ -375,7 +339,7 @@ function validatedQuery() {
 }
 
 // Validator class
-class SearchQuery {
+class SearchQueryDTO {
   @IsString()
   title: string
 }
@@ -384,15 +348,29 @@ class SearchQuery {
 class PostController {
   @httpGet('/search')
   // Provide the validator class to param type.
-  // tachijs can access it via `reflect-metadata`.
-  search(@validatedQuery() query: SearchQuery) {
+  search(@validatedQuery() query: SearchQueryDTO) {
     // Now `query` is type-safe
-    // because it has been validated and transformed into an instance of SearchQuery.
+    // because it has been validated and transformed into an instance of SearchQueryDTO.
+    // If validation errors happen, tachijs will pass the error into `next` so you can handle it easily by your error request handler.
     const { title } = query
 
     return {
       ...
     }
+  }
+}
+```
+
+To enable it, you have to install `reflect-metadata` and to apply `emitDecoratorMetadata` of `compilerOptions` to `tsconfig.json`.
+
+```sh
+npm i reflect-metadata
+```
+
+```json
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true
   }
 }
 ```
@@ -512,8 +490,6 @@ class HomeController {
   }
 }
 ```
-
-> `#httpContext`, `#inject` and `#injector` will be deprecated from v1.0.0. Please use `#context`
 
 #### Customize result
 
@@ -854,7 +830,7 @@ export type HandlerParamSelector<T> = (
 interface HandlerParamMeta<T> {
   index: number
   selector: HandlerParamSelector<T>
-  paramType: any
+  paramType?: any
 }
 ```
 
@@ -862,11 +838,9 @@ interface HandlerParamMeta<T> {
 - `selector` Its selector.
 - `paramType` metadata from `design:paramtypes`.
 
-#### `@reqBody(validator?: any)`
+#### `@reqBody()`
 
 Inject `req.body`.
-
-- `validator` Optional. A class with decorators of `class-validator`. tachijs will validate `req.body` with it and transform `req.body` into the validator class. If `validator` is not given but the parameter has a class validator as its param type, tachijs will use it via `reflect-metadata`.
 
 ```ts
 import { controller, httpPost, reqBody } from 'tachijs'
@@ -874,8 +848,7 @@ import { controller, httpPost, reqBody } from 'tachijs'
 @controller('/post')
 class PostController {
   @httpPost('/')
-  // Identically same to `create(@reqBody(PostDTO) post: PostDTO)`
-  create(@reqBody() post: PostDTO) {
+  create(@reqBody() post: any) {
     ...
   }
 }
