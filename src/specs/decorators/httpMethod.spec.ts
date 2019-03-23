@@ -11,7 +11,7 @@ import tachijs, {
   httpAll
 } from '../../index'
 import request from 'supertest'
-import { RequestHandler } from 'express'
+import { RequestHandler, ErrorRequestHandler } from 'express'
 
 describe('httpMethod', () => {
   it(`sets get method route`, async () => {
@@ -219,7 +219,47 @@ describe('httpMethod', () => {
     }
   })
 
-  it('accepts middlewares', async () => {
+  it('sets middleware', async () => {
+    // Given
+    const beforeSpy = jest.fn()
+    const afterSpy = jest.fn()
+    const beforeMiddleware: RequestHandler = (req, res, next) => {
+      beforeSpy()
+      next()
+    }
+    const afterMiddleware: ErrorRequestHandler = (error, req, res, next) => {
+      afterSpy()
+      res.status(500).send('Handled')
+    }
+
+    // When
+    @controller('/')
+    class HomeController {
+      @httpMethod('get', '/', {
+        before: [beforeMiddleware],
+        after: [afterMiddleware]
+      })
+      index() {
+        throw new Error()
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app).get('/')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 500,
+      text: 'Handled'
+    })
+    expect(beforeSpy).toBeCalled()
+    expect(afterSpy).toBeCalled()
+  })
+
+  it('sets before middleware if middleware is list of handlers', async () => {
     // Given
     const spy = jest.fn()
     const middleware: RequestHandler = (req, res, next) => {
@@ -248,6 +288,73 @@ describe('httpMethod', () => {
       text: 'Hello'
     })
     expect(spy).toBeCalled()
+  })
+
+  it('sets controller middleware and method middleware orderly', async () => {
+    // Given
+    const beforeControllerMiddlewareSpy = jest.fn()
+    const afterControllerMiddlewareSpy = jest.fn()
+    const beforeMethodMiddlewareSpy = jest.fn()
+    const afterMethodMiddlewareSpy = jest.fn()
+    let count = 0
+
+    const beforeControllerMiddleware: RequestHandler = (req, res, next) => {
+      beforeControllerMiddlewareSpy(++count)
+      next()
+    }
+    const afterControllerMiddleware: ErrorRequestHandler = (
+      error,
+      req,
+      res,
+      next
+    ) => {
+      afterControllerMiddlewareSpy(++count)
+      res.status(500).send('Handled')
+    }
+    const beforeMethodMiddleware: RequestHandler = (req, res, next) => {
+      beforeMethodMiddlewareSpy(++count)
+      next()
+    }
+    const afterMethodMiddleware: ErrorRequestHandler = (
+      error,
+      req,
+      res,
+      next
+    ) => {
+      afterMethodMiddlewareSpy(++count)
+      next(error)
+    }
+
+    // When
+    @controller('/', {
+      before: [beforeControllerMiddleware],
+      after: [afterControllerMiddleware]
+    })
+    class HomeController {
+      @httpMethod('get', '/', {
+        before: [beforeMethodMiddleware],
+        after: [afterMethodMiddleware]
+      })
+      index() {
+        throw new Error()
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app).get('/')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 500,
+      text: 'Handled'
+    })
+    expect(beforeControllerMiddlewareSpy).toBeCalledWith(1)
+    expect(beforeMethodMiddlewareSpy).toBeCalledWith(2)
+    expect(afterMethodMiddlewareSpy).toBeCalledWith(3)
+    expect(afterControllerMiddlewareSpy).toBeCalledWith(4)
   })
 
   it('registers routes from top to bottom', async () => {
