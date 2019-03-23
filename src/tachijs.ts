@@ -9,6 +9,7 @@ import {
 import { BaseController } from './BaseController'
 import { BaseResult } from './results'
 import { Injector } from './Injector'
+import { RequestHandlerParams } from 'express-serve-static-core'
 
 export type ConfigSetter = (app: express.Application) => void
 
@@ -138,35 +139,39 @@ class TachiJSApp<C> {
     methodMeta: HttpMethodMeta,
     handler: express.RequestHandler
   ) {
-    const middlewares = [
-      ...controllerMeta.middlewares,
-      ...methodMeta.middlewares
+    const before: RequestHandlerParams[] = [
+      ...(controllerMeta.middleware.before || []),
+      ...(methodMeta.middleware.before || [])
+    ]
+    const after: RequestHandlerParams[] = [
+      ...(methodMeta.middleware.after || []),
+      ...(controllerMeta.middleware.after || [])
     ]
 
     switch (methodMeta.method) {
       case 'get':
-        router.get(methodMeta.path, middlewares, handler)
+        router.get(methodMeta.path, ...before, handler, ...after)
         break
       case 'post':
-        router.post(methodMeta.path, middlewares, handler)
+        router.post(methodMeta.path, ...before, handler, ...after)
         break
       case 'put':
-        router.put(methodMeta.path, middlewares, handler)
+        router.put(methodMeta.path, ...before, handler, ...after)
         break
       case 'patch':
-        router.patch(methodMeta.path, middlewares, handler)
+        router.patch(methodMeta.path, ...before, handler, ...after)
         break
       case 'delete':
-        router.delete(methodMeta.path, middlewares, handler)
+        router.delete(methodMeta.path, ...before, handler, ...after)
         break
       case 'options':
-        router.options(methodMeta.path, middlewares, handler)
+        router.options(methodMeta.path, ...before, handler, ...after)
         break
       case 'head':
-        router.head(methodMeta.path, middlewares, handler)
+        router.head(methodMeta.path, ...before, handler, ...after)
         break
       case 'all':
-        router.all(methodMeta.path, middlewares, handler)
+        router.all(methodMeta.path, ...before, handler, ...after)
         break
       default:
         throw new Error(`"${methodMeta.method}" is not a valid method.`)

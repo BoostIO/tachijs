@@ -57,7 +57,7 @@ describe('controller', () => {
     })
   })
 
-  it('sets middlewares', async () => {
+  it('sets before middleware with array', async () => {
     // Given
     const spy = jest.fn()
     const middleware: RequestHandler = (req, res, next) => {
@@ -85,6 +85,45 @@ describe('controller', () => {
       text: 'Hello'
     })
     expect(spy).toBeCalled()
+  })
+
+  it('sets middleware', async () => {
+    // Given
+    const beforeSpy = jest.fn()
+    const afterSpy = jest.fn()
+    const beforeMiddleware: RequestHandler = (req, res, next) => {
+      beforeSpy()
+      next()
+    }
+    const afterMiddleware: ErrorRequestHandler = (error, req, res, next) => {
+      afterSpy()
+      res.status(500).send('Handled')
+    }
+
+    @controller('/test', {
+      before: [beforeMiddleware],
+      after: [afterMiddleware]
+    })
+    class HomeController {
+      @httpGet('/')
+      index() {
+        throw new Error()
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app).get('/test')
+
+    // Then
+    expect(response).toMatchObject({
+      status: 500,
+      text: 'Handled'
+    })
+    expect(beforeSpy).toBeCalled()
+    expect(afterSpy).toBeCalled()
   })
 
   it('sets middlewares individually', async () => {

@@ -1,10 +1,16 @@
 import { RequestHandler, RouterOptions } from 'express'
+import { RequestHandlerParams } from 'express-serve-static-core'
 
 const controllerMetaMap = new Map<any, ControllerMeta>()
 
+interface Middleware {
+  before?: RequestHandlerParams[]
+  after?: RequestHandlerParams[]
+}
+
 export interface ControllerMeta {
   path: string
-  middlewares: RequestHandler[]
+  middleware: Middleware
   routerOptions: RouterOptions
 }
 
@@ -23,13 +29,18 @@ export function setControllerMeta(
 
 export function controller(
   path: string,
-  middlewares: RequestHandler[] = [],
+  middleware: RequestHandler[] | Middleware = [],
   routerOptions: RouterOptions = {}
 ) {
+  if (Array.isArray(middleware)) {
+    middleware = {
+      before: middleware
+    }
+  }
   return function controllerDecorator(target: any) {
     const meta: ControllerMeta = {
       path,
-      middlewares,
+      middleware: middleware as Middleware,
       routerOptions
     }
 
