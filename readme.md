@@ -76,9 +76,9 @@ Now you can access [http://localhost:8000/](http://localhost:8000/).
 
 For other http methods, tachijs provides `@httpPost`, `@httpPut`, `@httpPatch`, `@httpDelete`, `@httpOptions`, `@httpHead` and `@httpAll`.
 
-### Configuring express app(Middlewares)
+### Configuring express app(Middleware)
 
-There are lots of ways to implement express middlewares.
+There are lots of ways to implement express middleware.
 
 #### Use `before` and `after` options
 
@@ -145,9 +145,9 @@ app.use(errorHandler)
 app.listen(8000)
 ```
 
-#### Apply middlewares to controllers and methods
+#### Apply middleware to controllers and methods
 
-Sometimes, you might want to apply middlewares to several methods only.
+Sometimes, you might want to apply middleware to several methods only.
 
 ```ts
 import { controller, httpGet, ForbiddenException } from 'tachijs'
@@ -780,38 +780,49 @@ type ConfigSetter = (app: express.Application) => void
 ```
 
 - `app` Optional. If you provide this option, tachijs will use it rather than creating new one.
-- `before` Optional. You can configure express app before registering controllers for applying middlewares.
+- `before` Optional. You can configure express app before registering controllers for applying middleware.
 - `after` Optional. You can configure express app before registering controllers for error handling.
 - `controllers` Optional. Array of controller classes.
 - `container` Optional. A place for registered services.
   If you want to use DI, you have to register services to here first.
 
-### `@controller(path: string, middlewares: RequestHandler[] = [], routerOptions: RouterOptions = {})`
+### `@controller(path: string, middleware: MiddlewareParams | RequestHandler[] = {}, routerOptions: RouterOptions = {})`
 
 It marks class as a controller.
 
 - `path` Target path.
-- `middlewares` Optional. Array of middlewares.
+- `middleware` Optional. `MiddlewareParams` or Array of middleware.
+  If it provided as array, tachijs will set the middleware before controller method.
 - `routerOptions` Optional. Express router options.
 
-### `@httpMethod(method: string, path: string, middlewares: RequestHandler[] = [])`
+#### `MiddlewareParams`
+
+```ts
+interface MiddlewareParams {
+  before?: RequestHandler[]
+  after?: RequestHandler[]
+}
+```
+
+### `@httpMethod(method: string, path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
 
 It marks method as a request handler.
 
 - `method` Target http methods, `'get'`, `'post'`, `'put'`, `'patch'`, `'delete'`, `'options'`, `'head'` or `'all'` are available. (`'all'` means any methods.)
 - `path` Target path.
-- `middlewares` Optional. Array of middlewares.
+- `middleware` Optional. `MiddlewareParams` or Array of middleware.
+  If it provided as array, tachijs will set the middleware before controller method.
 
 tachijs also provides shortcuts for `@httpMethod`.
 
-- `@httpGet(path: string, middlewares: RequestHandler[] = [])`
-- `@httpPost(path: string, middlewares: RequestHandler[] = [])`
-- `@httpPut(path: string, middlewares: RequestHandler[] = [])`
-- `@httpPatch(path: string, middlewares: RequestHandler[] = [])`
-- `@httpDelete(path: string, middlewares: RequestHandler[] = [])`
-- `@httpOptions(path: string, middlewares: RequestHandler[] = [])`
-- `@httpHead(path: string, middlewares: RequestHandler[] = [])`
-- `@httpAll(path: string, middlewares: RequestHandler[] = [])`
+- `@httpGet(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpPost(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpPut(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpPatch(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpDelete(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpOptions(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpHead(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
+- `@httpAll(path: string, middleware: MiddlewareParams | RequestHandler[] = {})`
 
 ### `@handlerParam<T>(selector: HandlerParamSelector<T>)`
 
