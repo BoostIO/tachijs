@@ -3,21 +3,14 @@
   "version": "1.0.0-0",
   "description": "Highly testable dead simple web server written in Typescript",
   "main": "dist",
-  "types": "types",
   "files": [
     "dist/**/*",
     "!dist/examples/**/*",
-    "!dist/specs/**/*",
-    "types/**/*",
-    "!types/examples/**/*",
-    "!types/specs/**/*",
-    "src/**/*",
-    "!src/examples/**/*",
-    "!src/specs/**/*"
+    "!dist/specs/**/*"
   ],
   "scripts": {
     "dev": "nodemon",
-    "build": "rimraf dist types && tsc",
+    "build": "rimraf dist && tsc",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "npm run lint:prettier && npm run lint:tslint",
     "lint:prettier": "prettier --check 'src/**/*.ts'",
