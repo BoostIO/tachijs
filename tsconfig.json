@@ -26,7 +26,6 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
-    "declarationDir": "types",
     "declarationMap": true
   }
 }
