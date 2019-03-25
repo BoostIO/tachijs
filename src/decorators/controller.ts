@@ -29,7 +29,7 @@ export function setControllerMeta(
 
 export function controller(
   path: string,
-  middleware: RequestHandler[] | Middleware = [],
+  middleware: RequestHandler[] | Middleware = {},
   routerOptions: RouterOptions = {}
 ) {
   if (Array.isArray(middleware)) {
