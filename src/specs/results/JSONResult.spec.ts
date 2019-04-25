@@ -71,4 +71,43 @@ describe('JSONResult', () => {
       })
     })
   })
+
+  it('accepts headers', async () => {
+    // Given
+    interface IndexResponseData {
+      message: string
+    }
+    @controller('/')
+    class HomeController {
+      @httpGet('/')
+      index(): JSONResult<IndexResponseData> {
+        return new JSONResult(
+          {
+            message: 'Hello'
+          },
+          undefined,
+          { test: 'test' }
+        )
+      }
+    }
+    const app = tachijs({
+      controllers: [HomeController]
+    })
+
+    // When
+    const response = await request(app)
+      .get('/')
+      .expect('Content-Type', /json/)
+
+    // Then
+    expect(response).toMatchObject({
+      status: 200,
+      header: {
+        test: 'test'
+      },
+      text: JSON.stringify({
+        message: 'Hello'
+      })
+    })
+  })
 })

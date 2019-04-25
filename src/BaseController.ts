@@ -10,6 +10,7 @@ import {
   RenderResultCallback,
   SendFileResultCallback
 } from './results'
+import { OutgoingHttpHeaders } from 'http'
 
 interface HttpContext {
   req: express.Request
@@ -69,41 +70,56 @@ export class BaseController {
     return this.injector(key)
   }
 
-  end<D>(data: D, encoding?: string, status?: number): EndResult<D> {
-    return new EndResult(data, encoding, status)
+  end<D>(
+    data: D,
+    encoding?: string,
+    status?: number,
+    headers?: OutgoingHttpHeaders
+  ): EndResult<D> {
+    return new EndResult(data, encoding, status, headers)
   }
 
-  json<D>(data: D, status?: number): JSONResult<D> {
+  json<D>(
+    data: D,
+    status?: number,
+    headers?: OutgoingHttpHeaders
+  ): JSONResult<D> {
     return new JSONResult(data, status)
   }
 
-  redirect(location: string, status?: number) {
-    return new RedirectResult(location, status)
+  redirect(location: string, status?: number, headers?: OutgoingHttpHeaders) {
+    return new RedirectResult(location, status, headers)
   }
 
   render<D>(
     view: string,
     locals?: D,
     callback?: RenderResultCallback,
-    status?: number
+    status?: number,
+    headers?: OutgoingHttpHeaders
   ): RenderResult<D> {
-    return new RenderResult(view, locals, callback, status)
+    return new RenderResult(view, locals, callback, status, headers)
   }
 
   sendFile(
     filePath: string,
     options?: any,
     callback?: SendFileResultCallback,
-    status?: number
+    status?: number,
+    headers?: OutgoingHttpHeaders
   ) {
-    return new SendFileResult(filePath, options, callback, status)
+    return new SendFileResult(filePath, options, callback, status, headers)
   }
 
-  send<D>(data: D, status?: number): SendResult<D> {
-    return new SendResult(data, status)
+  send<D>(
+    data: D,
+    status?: number,
+    headers?: OutgoingHttpHeaders
+  ): SendResult<D> {
+    return new SendResult(data, status, headers)
   }
 
-  sendStatus(status: number) {
-    return new SendStatusResult(status)
+  sendStatus(status: number, headers?: OutgoingHttpHeaders) {
+    return new SendStatusResult(status, headers)
   }
 }
