@@ -84,7 +84,7 @@ export class BaseController {
     status?: number,
     headers?: OutgoingHttpHeaders
   ): JSONResult<D> {
-    return new JSONResult(data, status)
+    return new JSONResult(data, status, headers)
   }
 
   redirect(location: string, status?: number, headers?: OutgoingHttpHeaders) {
