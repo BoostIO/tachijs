@@ -72,30 +72,4 @@ describe('EndResult', () => {
       text: 'Hello'
     })
   })
-
-  it('accepts headers', async () => {
-    // Given
-    @controller('/')
-    class HomeController {
-      @httpGet('/')
-      index(): EndResult<string> {
-        return new EndResult('Hello', undefined, undefined, { test: 'test' })
-      }
-    }
-
-    // When
-    const app = tachijs({
-      controllers: [HomeController]
-    })
-
-    // Then
-    const response = await request(app).get('/')
-    expect(response).toMatchObject({
-      status: 200,
-      text: 'Hello',
-      headers: {
-        test: 'test'
-      }
-    })
-  })
 })

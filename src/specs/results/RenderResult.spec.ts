@@ -139,33 +139,4 @@ describe('RenderResult', () => {
       text: '<h1>Hello</h1>'
     })
   })
-
-  it('accepts status', async () => {
-    // Given
-    @controller('/')
-    class HomeController {
-      @httpGet('/')
-      index() {
-        return new RenderResult('test', undefined, undefined, undefined, {
-          test: 'test'
-        })
-      }
-    }
-    const app = tachijs({
-      before,
-      controllers: [HomeController]
-    })
-
-    // When
-    const response = await request(app).get('/')
-
-    // Then
-    expect(response).toMatchObject({
-      status: 200,
-      text: '<h1>Hello</h1>',
-      headers: {
-        test: 'test'
-      }
-    })
-  })
 })

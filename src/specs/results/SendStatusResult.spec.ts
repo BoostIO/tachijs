@@ -24,30 +24,4 @@ describe('SendStatusResult', () => {
       text: 'OK'
     })
   })
-
-  it('accepts headers', async () => {
-    // Given
-    @controller('/')
-    class HomeController {
-      @httpGet('/')
-      index() {
-        return new SendStatusResult(200, { test: 'test' })
-      }
-    }
-    const app = tachijs({
-      controllers: [HomeController]
-    })
-
-    // When
-    const response = await request(app).get('/')
-
-    // Then
-    expect(response).toMatchObject({
-      status: 200,
-      text: 'OK',
-      headers: {
-        test: 'test'
-      }
-    })
-  })
 })

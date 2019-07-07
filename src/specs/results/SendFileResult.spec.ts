@@ -109,36 +109,4 @@ describe('SendFileResult', () => {
       text: '# Test document\n'
     })
   })
-
-  it('accepts headers', async () => {
-    // Given
-    @controller('/')
-    class HomeController {
-      @httpGet('/')
-      index() {
-        return new SendFileResult(
-          path.join(__dirname, '../dummy/files/readme.md'),
-          undefined,
-          undefined,
-          undefined,
-          { test: 'test' }
-        )
-      }
-    }
-    const app = tachijs({
-      controllers: [HomeController]
-    })
-
-    // When
-    const response = await request(app).get('/')
-
-    // Then
-    expect(response).toMatchObject({
-      status: 200,
-      text: '# Test document\n',
-      headers: {
-        test: 'test'
-      }
-    })
-  })
 })

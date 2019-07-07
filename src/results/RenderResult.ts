@@ -1,6 +1,5 @@
 import express from 'express'
 import { BaseResult } from './BaseResult'
-import { OutgoingHttpHeaders } from 'http'
 
 export type RenderResultCallback = (
   error: Error | null,
@@ -15,8 +14,7 @@ export class RenderResult<L extends {}> extends BaseResult {
     public readonly view: string,
     public readonly locals?: L,
     public readonly callback?: RenderResultCallback,
-    public readonly status: number = 200,
-    public readonly headers?: OutgoingHttpHeaders
+    public readonly status: number = 200
   ) {
     super()
   }
@@ -26,9 +24,6 @@ export class RenderResult<L extends {}> extends BaseResult {
     res: express.Response,
     next: express.NextFunction
   ) {
-    if (this.headers != null) {
-      res.set(this.headers)
-    }
     if (this.callback != null) {
       const callback = this.callback
       return res

@@ -51,30 +51,4 @@ describe('RedirectResult', () => {
       }
     })
   })
-
-  it('accepts headers', async () => {
-    // Given
-    @controller('/')
-    class HomeController {
-      @httpGet('/')
-      index() {
-        return new RedirectResult('/test', undefined, { test: 'test' })
-      }
-    }
-    const app = tachijs({
-      controllers: [HomeController]
-    })
-
-    // When
-    const response = await request(app).get('/')
-
-    // Then
-    expect(response).toMatchObject({
-      status: 302,
-      header: {
-        test: 'test',
-        location: '/test'
-      }
-    })
-  })
 })
