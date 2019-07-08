@@ -54,9 +54,7 @@ class TachiJSApp<C> {
       const controllerMeta = getControllerMeta(ControllerConstructor)
       if (controllerMeta == null)
         throw new Error(
-          `Please apply @controller decorator to "${
-            ControllerConstructor.name
-          }".`
+          `Please apply @controller decorator to "${ControllerConstructor.name}".`
         )
       const router = express.Router(controllerMeta.routerOptions)
 
