@@ -35,8 +35,8 @@ export function getHandlerParamMetaList(
 
 export function setHandlerParamMetaList(
   controller: any,
-  meta: HandlerParamMetaList,
-  propertyKey: string
+  propertyKey: string,
+  meta: HandlerParamMetaList
 ): void {
   if (!handlerParamMetaMap.has(controller)) {
     handlerParamMetaMap.set(controller, new Map())
@@ -73,6 +73,6 @@ export function handlerParam<T>(selector: HandlerParamSelector<T>) {
       handlerParamMeta
     ]
 
-    setHandlerParamMetaList(target.constructor, meta, propertyKey)
+    setHandlerParamMetaList(target.constructor, propertyKey, meta)
   }
 }
