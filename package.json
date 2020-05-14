@@ -55,7 +55,7 @@
     "cookie-parser": "^1.4.3",
     "express-session": "^1.15.6",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.9",
+    "nodemon": "^2.0.4",
     "prettier": "^1.16.4",
     "pug": "^2.0.3",
     "reflect-metadata": "^0.1.12",
